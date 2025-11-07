@@ -2,7 +2,7 @@
 
 > A terminal-styled IP address lookup and network analysis tool with hacker aesthetics
 
-[![Version](https://img.shields.io/badge/version-1.0-green.svg)](https://github.com/wegotussome/ip)
+[![Version](https://img.shields.io/badge/version-1.0-green.svg)]([https://github.com/arelas/ip_wegotussome_com])
 [![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-blue.svg)](LICENSE)
 
 **Live Demo**: [ip.wegotussome.com](https://ip.wegotussome.com)
