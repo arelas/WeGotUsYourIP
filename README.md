@@ -3,7 +3,7 @@
 > A terminal-styled IP address lookup and network analysis tool with hacker aesthetics
 
 [![Version](https://img.shields.io/badge/version-1.0-green.svg)](https://github.com/wegotussome/ip)
-[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-blue.svg)](LICENSE)
 
 **Live Demo**: [ip.wegotussome.com](https://ip.wegotussome.com)
 
@@ -299,7 +299,32 @@ We welcome contributions! Here's how you can help:
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License** (CC BY-NC-SA 4.0).
+
+### What This Means:
+
+**✅ You CAN:**
+- Use the site for personal, educational, or non-commercial purposes
+- Modify and adapt the code
+- Share the code with others
+- Create derivative works
+
+**❌ You CANNOT:**
+- Use it for commercial purposes
+- Sell the code or derivatives
+- Monetize it in any way
+- Remove attribution to We Got Us Some Industries
+
+**📋 Requirements:**
+- Give appropriate credit
+- Link to the license
+- Indicate if changes were made
+- Share derivatives under the same license
+
+For the full license text, see the [LICENSE](LICENSE) file or visit:  
+https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+**Have a legitimate commercial use case?** Contact us to discuss licensing options.
 
 ## Credits
 
