@@ -344,9 +344,7 @@ Website: [wegotussome.com](https://wegotussome.com)
 
 ## Support
 
-- **Website**: [wegotussome.com](https://wegotussome.com)
-- **Issues**: [GitHub Issues](https://github.com/wegotussome/ip/issues)
-- **Email**: support@wegotussome.com
+- **Issues**: [GitHub Issues](https://github.com/arelas/ip_wegotussome_com/issues)
 
 ## Acknowledgments
 
