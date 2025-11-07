@@ -7,7 +7,7 @@
 
 **Live Demo**: [ip.wegotussome.com](https://ip.wegotussome.com)
 
-![Screenshot](screenshot.png)
+![Screenshot](https://ip.wegotussome.com/screenshot.png)
 
 ## Overview
 
