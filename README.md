@@ -1,6 +1,6 @@
 # We Got Us Your IP
 
-> A terminal-styled IP address lookup and network analysis tool with hacker aesthetics
+> A single-page terminal-styled IP analysis tool that instantly detects your IP address and provides comprehensive network information including WHOIS data, VPN detection, security checks, and browser fingerprinting.
 
 [![Version](https://img.shields.io/badge/version-1.0-green.svg)](https://github.com/arelas/ip_wegotussome_com)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-blue.svg)](LICENSE)
