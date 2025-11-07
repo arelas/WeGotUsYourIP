@@ -15,14 +15,14 @@
 
 ### Key Features
 
-- 🎯 **Instant IP Detection** - Automatically displays your IP address on page load
-- 🔒 **VPN/Proxy Detection** - Identifies if you're behind a VPN or proxy
-- 📋 **One-Click Copy** - Copy your IP to clipboard instantly
-- 🔍 **WHOIS Lookup** - Detailed network registration information for any IP
-- 🛡️ **Blacklist Check** - Basic security scanning with links to comprehensive tools
-- 🖥️ **Browser Fingerprinting** - Detailed analysis of your device and browser
-- 📊 **Export Data** - Download all collected data as JSON
-- 🚀 **Quick Tools** - Direct links to speed tests, DNS checks, and more
+- **Instant IP Detection** - Automatically displays your IP address on page load
+- **VPN/Proxy Detection** - Identifies if you're behind a VPN or proxy
+- **One-Click Copy** - Copy your IP to clipboard instantly
+- **WHOIS Lookup** - Detailed network registration information for any IP
+- **Blacklist Check** - Basic security scanning with links to comprehensive tools
+- **Browser Fingerprinting** - Detailed analysis of your device and browser
+- **Export Data** - Download all collected data as JSON
+- **Quick Tools** - Direct links to speed tests, DNS checks, and more
 
 ## Features in Detail
 
