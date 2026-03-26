@@ -1,3 +1,69 @@
+## Version 1.2
+
+### Summary
+Four v1.x roadmap items completed: Reverse DNS lookup, interactive geolocation map, comprehensive real DNSBL blacklist checking, and API rate limit handling with automatic fallback. Theme toggle overlap bug fixed in WGUS mode.
+
+### New Features
+
+#### Reverse DNS Lookup (`> REVERSE DNS`)
+- PTR record lookup via `dns.google/resolve` (DNS-over-HTTPS, no API key required)
+- Handles IPv4 (reversed octets → `.in-addr.arpa`) and IPv6 (nibble format → `.ip6.arpa`)
+- Displays all resolved hostnames and TTL; clean "not configured" message if no PTR exists
+
+#### Geolocation Map (`> VIEW MAP`)
+- Leaflet.js 1.9.4 + OpenStreetMap tiles via cdnjs — no API key, no cost
+- Custom marker uses the active theme's `--accent` CSS variable with a glow effect
+- Popup shows IP, city, country; coordinates displayed in a bar below the map
+- `invalidateSize()` called after reveal to prevent the blank-tile issue on first open
+- Map recenters correctly on subsequent opens without re-initializing
+
+#### Comprehensive Blacklist Check (`> CHECK BLACKLIST`)
+- Replaced the previous heuristic org-name check with real DNSBL queries
+- 5 lists queried in parallel via `dns.google/resolve`: Spamhaus ZEN, Barracuda Reputation, SORBS, SpamCop, UCEProtect L1
+- UI updates live as each result resolves — no waiting for all 5 to complete
+- CLEAN / LISTED / ERROR badge per list; overall ✓ CLEAN / ✗ N LISTED summary at top
+- AbuseIPDB shown as a manual link (their API requires a paid account key)
+- IPv6: DNSBL is IPv4-only by spec; shows manual links for all lists gracefully
+
+#### API Rate Limit Handling
+- Primary provider: ipapi.co (unchanged)
+- On HTTP 429: visible red banner appears immediately with a 60-second live countdown
+- After countdown: automatically retries with `ipwho.is` (free, HTTPS, no key required)
+- ipwho.is response normalized to ipapi.co field shape — WHOIS, map, RDNS all work transparently with fallback data
+- Small "Data via fallback provider" note shown in IP display if fallback was used
+
+### Bug Fixes
+
+#### WGUS Theme Toggle Overlap
+- **Problem**: The fixed `position: fixed; top: 16px; right: 16px` theme toggle button overlapped the `self-hosted` badge in the WGUS header. Additionally, the `#wgus-header` CSS selector had been dropped in a prior edit, leaving its layout declarations as orphaned/ignored rules — causing the header to appear in both themes.
+- **Fix**: Restored the `#wgus-header { display: none }` default rule and `body.theme-wgus #wgus-header { display: flex }` override. In WGUS mode, the floating fixed button is hidden (`display: none`) and a `.wgus-header-toggle` button is rendered inside the header, right-aligned alongside the `self-hosted` badge. Both buttons call the same `toggleTheme()` and `applyTheme()` keeps their labels in sync.
+
+### Architecture Changes
+
+#### Section Toggle Refactor
+Replaced 5 separate copy-pasted toggle event listeners with a declarative `SECTIONS` registry:
+
+```javascript
+const SECTIONS = {
+    whois:       { el, btn, closed, open, fn },
+    rdns:        { el, btn, closed, open, fn },
+    map:         { el, btn, closed, open, fn },
+    blacklist:   { el, btn, closed, open, fn },
+    fingerprint: { el, btn, closed, open, fn },
+};
+```
+
+`toggleSection(key)` and `closeAllSections(except)` handle all open/close/label logic. Adding future sections requires one object entry.
+
+### Dependencies Added
+- **Leaflet.js 1.9.4** — loaded via cdnjs `<link>` + `<script>` in `<head>`
+- **ipwho.is** — runtime fallback only, no script tag
+
+### Roadmap Status
+All v1.x items completed. Remaining future items moved to Version 2.0.
+
+---
+
 # We Got Us Your IP - Version History
 
 ---

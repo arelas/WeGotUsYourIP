@@ -1,8 +1,8 @@
 # We Got Us Your IP
 
-> A single-page IP analysis tool with a terminal hacker aesthetic and an optional WGUS brand theme. Instantly detects your IP address and provides comprehensive network information including WHOIS data, VPN detection, security checks, and browser fingerprinting.
+> A single-page IP analysis tool with a terminal hacker aesthetic and an optional WGUS brand theme. Instantly detects your IP address and provides comprehensive network information including WHOIS data, reverse DNS, VPN detection, real-time DNSBL blacklist checks, geolocation mapping, and browser fingerprinting.
 
-[![Version](https://img.shields.io/badge/version-1.1-green.svg)](https://github.com/arelas/ip_wegotussome_com)
+[![Version](https://img.shields.io/badge/version-1.2-green.svg)](https://github.com/arelas/ip_wegotussome_com)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-blue.svg)](LICENSE)
 
 **Live Demo**: [ip.wegotussome.com](https://ip.wegotussome.com)
@@ -15,15 +15,18 @@
 
 ### Key Features
 
-- **Instant IP Detection** - Automatically displays your IP address on page load
-- **VPN/Proxy Detection** - Identifies if you're behind a VPN or proxy
-- **One-Click Copy** - Copy your IP to clipboard instantly
-- **WHOIS Lookup** - Detailed network registration information for any IP
-- **Blacklist Check** - Basic security scanning with links to comprehensive tools
-- **Browser Fingerprinting** - Detailed analysis of your device and browser
-- **Export Data** - Download all collected data as JSON
-- **Quick Tools** - Direct links to speed tests, DNS checks, and more
-- **Dual Theme** - Toggle between Terminal and WGUS brand themes, preference persisted via localStorage
+- **Instant IP Detection** — Automatically displays your IP address on page load
+- **VPN/Proxy Detection** — Identifies if you're behind a VPN or proxy
+- **One-Click Copy** — Copy your IP to clipboard instantly
+- **WHOIS Lookup** — Detailed network registration information for any IP
+- **Reverse DNS** — PTR record lookup via DNS-over-HTTPS for any IP
+- **Geolocation Map** — Interactive Leaflet.js map pinned to the IP's coordinates
+- **Comprehensive Blacklist Check** — Real DNSBL queries across 5 lists in parallel
+- **Browser Fingerprinting** — Detailed analysis of your device and browser
+- **Export Data** — Download all collected data as JSON
+- **Quick Tools** — Direct links to speed tests, DNS checks, and more
+- **API Rate Limit Handling** — Automatic fallback provider with live countdown
+- **Dual Theme** — Toggle between Terminal and WGUS brand themes, persisted via localStorage
 
 ## Features in Detail
 
@@ -39,38 +42,57 @@
 ### VPN/Proxy Detection
 - Automatic detection based on ISP patterns
 - Visual badge indicator (Green = Clean, Red = VPN/Proxy)
-- Helps identify masked connections
 
 ### WHOIS Lookup
 Query detailed registration information for any IP address:
 - Geographic coordinates (latitude/longitude)
-- Complete organization details
-- ASN information
+- Complete organization and ASN details
 - Timezone and UTC offset
-- Currency information
-- Calling code
+- Currency and calling code
 - Continent, region, city details
 
-Powered by **ipapi.co** (same provider as the main IP lookup, ensuring reliability).
+Powered by **ipapi.co** (same provider as the main IP lookup).
 
-### Blacklist Security Check
-- Basic heuristic security analysis against org/ASN data
-- Status indicator (Clean/Suspicious)
-- Links to comprehensive blacklist services:
-  - AbuseIPDB
-  - MXToolbox
-  - Spamhaus
+### Reverse DNS
+- PTR record lookup via `dns.google/resolve` — no API key, no cost
+- Handles both IPv4 (reversed octets → `.in-addr.arpa`) and IPv6 (nibble format → `.ip6.arpa`)
+- Displays resolved hostname(s) and TTL, or a clean message if no PTR record is configured
+
+### Geolocation Map
+- Interactive map powered by **Leaflet.js** + **OpenStreetMap** tiles (via cdnjs — no API key)
+- Custom marker styled with the active theme's accent color
+- Popup shows IP, city, and country; coordinates displayed below the map
+- Correctly handles the hidden-to-visible transition (`invalidateSize`)
+
+### Comprehensive Blacklist Check
+Real DNSBL queries against 5 blacklists via DNS-over-HTTPS (`dns.google/resolve`):
+
+| List | Zone |
+|---|---|
+| Spamhaus ZEN | `zen.spamhaus.org` |
+| Barracuda Reputation | `b.barracudacentral.org` |
+| SORBS | `dnsbl.sorbs.net` |
+| SpamCop | `bl.spamcop.net` |
+| UCEProtect L1 | `dnsbl-1.uceprotect.net` |
+
+- All 5 checks fire in parallel; the UI updates live as each result resolves
+- CLEAN / LISTED badge per list, plus an overall summary score at the top
+- AbuseIPDB included as a manual link (requires account for API access)
+- Gracefully degrades to manual links for IPv6 (DNSBL is IPv4-only by spec)
+
+### API Rate Limit Handling
+- Catches HTTP 429 from ipapi.co immediately with a visible red banner
+- Displays a 60-second live countdown, then automatically retries
+- Falls back to **ipwho.is** (free tier, HTTPS, no key required)
+- Normalizes ipwho.is field names to the same internal shape — all downstream features (WHOIS, map, reverse DNS) continue to work transparently
+- Indicates which provider served the data if the fallback was used
 
 ### Browser Fingerprint
-Comprehensive device and browser analysis:
 - Browser type and version (Edge/Chrome/Firefox/Safari correctly detected)
-- Operating system
+- Operating system, platform, language
 - Screen resolution and color depth
-- CPU core count
-- Device memory
-- Touch capabilities
-- Language settings
-- Cookie and tracking preferences
+- CPU cores, device memory, touch points
+- Cookie and Do Not Track settings
 
 ### Data Export
 - Download complete analysis as JSON
@@ -78,43 +100,46 @@ Comprehensive device and browser analysis:
 - Filename format: `ip-report-{IP}-{timestamp}.json`
 
 ### Theme Toggle
-Switch between two visual themes via the button in the top-right corner. Your preference is saved to `localStorage` and restored on the next visit.
+Switch between two visual themes. Your preference is saved to `localStorage` and restored on next visit.
 
-- **Terminal** — Original dark hacker aesthetic: terminal green (#00ff66) on pure black, CRT scanlines, phosphor glow, Courier New
-- **WGUS** — Brand-consistent theme matching wegotussome.com and qrcodes.wegotussome.com: Syne + JetBrains Mono, yellow-green accent (#e8ff47), warm dark surfaces, SVG noise texture, breadcrumb header
+- **Terminal** (default) — Dark hacker aesthetic: terminal green (#00ff66) on pure black, CRT scanlines, phosphor glow, Courier New. Toggle button is a fixed pill in the top-right corner.
+- **WGUS** — Brand-consistent theme matching wegotussome.com and qrcodes.wegotussome.com: Syne + JetBrains Mono, yellow-green accent (#e8ff47), warm dark surfaces, SVG noise texture. Includes a full breadcrumb navigation header (`wegotussome / ip`) with the toggle button integrated on the right side of the header — no floating button overlapping the UI.
 
 ## Design Philosophy
 
 ### Terminal Theme
-Embraces a **dark hacker/terminal aesthetic** with:
 - Terminal green (#00ff66) on pure black
-- CRT scanline effects
-- Retro phosphor text glow
-- Monospace typography (Courier New)
-- Command-line style interface
+- CRT scanline overlay and radial vignette
+- Phosphor text glow on borders and values
+- Courier New monospace throughout
+- Command-line style labels (`[ISP]`, `[LOCATION]`, etc.)
 
 ### WGUS Theme
-Matches the **We Got Us Some Industries** brand system:
-- Syne (headings) + JetBrains Mono (body/labels)
-- Yellow-green accent (#e8ff47) on near-black surfaces (#0a0a0a / #111111)
-- Three-tier color system: text (#f0f0f0), muted (#666), border (#222)
+Matches the **We Got Us Some Industries** brand system, built from the actual QR tool source:
+- Syne (headings/IP display) + JetBrains Mono (labels/UI/body)
+- Yellow-green accent (#e8ff47), text #f0f0f0, muted #666, border #222
 - SVG fractalNoise texture overlay
 - 4px border-radius throughout
-- Navigation breadcrumb header (`wegotussome / ip`)
+- Breadcrumb nav header with animated pulse dot and `self-hosted` badge
 
 ## Technology Stack
 
 ### Frontend
-- **HTML5** - Semantic markup
-- **CSS3** - Custom properties (CSS variables), animations, flexbox, media queries
-- **Vanilla JavaScript** - ES6+, async/await, no frameworks
+- **HTML5** — Semantic markup
+- **CSS3** — Custom properties (CSS variables), animations, flexbox, media queries
+- **Vanilla JavaScript** — ES6+, async/await, no frameworks
 
 ### APIs
-- **ipapi.co** - Primary IP geolocation data and WHOIS lookups
+- **ipapi.co** — Primary IP geolocation and WHOIS
+- **ipwho.is** — Fallback provider (rate limit handling)
+- **dns.google/resolve** — DNS-over-HTTPS for PTR records and DNSBL queries
+
+### Libraries
+- **Leaflet.js 1.9.4** (cdnjs) — Interactive map
 
 ### Fonts (WGUS theme)
-- **Syne** (Google Fonts) - Headings and values
-- **JetBrains Mono** (Google Fonts) - Labels and UI text
+- **Syne** (Google Fonts) — Headings and values
+- **JetBrains Mono** (Google Fonts) — Labels and UI text
 
 ### Browser APIs
 - Clipboard API (copy functionality)
@@ -126,7 +151,7 @@ Matches the **We Got Us Some Industries** brand system:
 
 ### Quick Deploy (Recommended)
 
-Simply upload `index.html` to your web server. That's it — no build process, no dependencies.
+Simply upload `index.html` to your web server — no build process, no dependencies.
 
 ```bash
 scp index.html user@yourserver.com:/var/www/ip.wegotussome.com/
@@ -139,7 +164,7 @@ git clone https://github.com/wegotussome/ip.git
 cd ip
 open index.html
 
-# Or use a local server
+# Or use a local server (recommended for Clipboard API)
 python -m http.server 8000
 # Visit http://localhost:8000
 ```
@@ -147,7 +172,7 @@ python -m http.server 8000
 ### Requirements
 
 - Modern web browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
-- Internet connection for API calls
+- Internet connection for API and map tile calls
 - HTTPS recommended (required for Clipboard API)
 
 ## Usage
@@ -155,40 +180,47 @@ python -m http.server 8000
 ### Basic Usage
 
 1. **Visit the site** — Your IP is automatically detected and displayed
-2. **Copy your IP** — Click the "COPY IP" button
-3. **Explore features** — Use the four main buttons:
-   - **WHOIS MY IP** — Detailed lookup of your IP
-   - **CHECK BLACKLIST** — Security reputation check
-   - **BROWSER INFO** — Device fingerprint analysis
-   - **EXPORT DATA** — Download JSON report
+2. **Copy your IP** — Click the `> COPY IP` button
+3. **Explore features** — Use the action buttons:
+   - `> WHOIS MY IP` — Detailed registration lookup
+   - `> REVERSE DNS` — PTR record for your IP
+   - `> VIEW MAP` — Interactive geolocation map
+   - `> CHECK BLACKLIST` — Real-time DNSBL checks across 5 lists
+   - `> BROWSER INFO` — Device fingerprint analysis
+   - `> EXPORT DATA` — Download JSON report
 
 ### Custom IP Lookup
 
-1. Enter any IP address in the input field (IPv4 or IPv6)
-2. Click "WHOIS LOOKUP"
-3. View detailed information about that IP
+1. Enter any IPv4 or IPv6 address in the input field
+2. Click `> WHOIS LOOKUP` (or press Enter)
+3. View detailed WHOIS information for that IP
 
 ### Theme Toggle
 
-Click the button in the top-right corner to switch between Terminal and WGUS themes. The choice is saved automatically.
+- **Terminal mode**: click `⬡ TERMINAL` in the top-right corner
+- **WGUS mode**: click `⬡ TERMINAL` in the right side of the navigation header
+
+The choice is saved automatically and restored on next visit.
 
 ### Quick Tools
 
-Use the bottom toolbar for instant access to:
+Bottom toolbar links to:
 - **Speed Test** — fast.com
 - **DNS Check** — dnschecker.org
-- **MX Toolbox** — Email and network diagnostics
+- **MX Toolbox** — mxtoolbox.com
 - **Port Scanner** — whatismyip.com port scanner
 
 ## Configuration
 
 ### API Keys
 
-The site uses ipapi.co's free public tier by default. For production deployments with high traffic:
+The site uses free public tiers by default. For high-traffic production deployments:
 
 ```javascript
-// In getIPInfo() and getWhoisData()
-const response = await fetch('https://ipapi.co/json/?key=YOUR_KEY_HERE');
+// In fetchWithFallback() — primary provider
+const primary = await fetch('https://ipapi.co/json/?key=YOUR_KEY_HERE');
+
+// In getWhoisData() — WHOIS lookups
 const response = await fetch(`https://ipapi.co/${ip}/json/?key=YOUR_KEY_HERE`);
 ```
 
@@ -199,7 +231,7 @@ Edit the `:root` CSS variables block:
 
 ```css
 :root {
-    --accent:    #00ff66;  /* terminal green — change to any color */
+    --accent:    #00ff66;  /* change to any color */
     --page-bg:   #0a0a0a;
     --surface:   #0d0d0d;
     --inner-bg:  #000000;
@@ -212,7 +244,7 @@ Edit the `body.theme-wgus` CSS variables block:
 
 ```css
 body.theme-wgus {
-    --accent:   #e8ff47;  /* yellow-green */
+    --accent:   #e8ff47;
     --text:     #f0f0f0;
     --muted:    #666666;
     --border:   #222222;
@@ -250,10 +282,10 @@ Fully responsive design optimized for:
 
 ## Performance
 
-- **Load Time**: < 1 second (excluding API calls)
-- **File Size**: ~35KB (single HTML file)
-- **API Calls**: 1 per page load (ipapi.co)
-- **No External JS Dependencies**: Pure vanilla JavaScript
+- **Load Time**: < 1 second (excluding API and map tile calls)
+- **File Size**: ~40KB (single HTML file)
+- **External JS**: Leaflet.js via cdnjs (map, loaded at page start)
+- **API Calls on Load**: 1 (ipapi.co); all other calls are user-initiated
 
 ## Security & Privacy
 
@@ -270,36 +302,39 @@ Fully responsive design optimized for:
 
 ### API Privacy
 - **ipapi.co** — [Privacy Policy](https://ipapi.co/privacy/)
+- **ipwho.is** — [Privacy Policy](https://ipwho.is/)
+- **dns.google** — [Google Privacy Policy](https://policies.google.com/privacy)
+- **OpenStreetMap** — [Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy)
 
 ## Troubleshooting
 
 ### Common Issues
 
 **Issue**: IP not detecting  
-**Solution**: Check internet connection and ensure ipapi.co is accessible
+**Solution**: Check internet connection; if rate limited, the countdown banner will appear and retry automatically
 
 **Issue**: Copy button not working  
 **Solution**: Ensure you're on HTTPS or localhost (Clipboard API requirement)
 
 **Issue**: WHOIS data not loading  
-**Solution**: Verify ipapi.co is accessible from your network; check browser console for errors
+**Solution**: Verify ipapi.co is accessible; check browser console for errors
+
+**Issue**: Map not rendering  
+**Solution**: Ensure cdnjs.cloudflare.com is reachable for Leaflet.js; confirm the IP has valid coordinates
+
+**Issue**: Blacklist check shows all ERROR  
+**Solution**: Verify dns.google is accessible from your network
 
 **Issue**: WGUS theme fonts not loading  
-**Solution**: Ensure Google Fonts is reachable; the site falls back gracefully to system fonts
+**Solution**: Ensure fonts.googleapis.com is reachable; site falls back to system fonts gracefully
 
 **Issue**: Mobile layout broken  
 **Solution**: Clear browser cache and hard refresh (Ctrl+Shift+R)
 
 ## Roadmap
 
-### Version 1.x (Planned)
-- [ ] Reverse DNS lookup
-- [ ] IP geolocation map integration
-- [ ] Historical data charts
-- [ ] More comprehensive blacklist checking
-- [ ] API rate limit handling with user feedback
-
 ### Version 2.0 (Future)
+- [ ] Historical data charts
 - [ ] Multi-language support
 - [ ] PWA capabilities (offline mode)
 - [ ] Bulk IP lookup
@@ -314,7 +349,7 @@ Fully responsive design optimized for:
 
 ### Development Guidelines
 - Maintain single-file structure
-- Ensure both themes remain fully functional
+- Ensure both themes remain fully functional after any changes
 - Ensure mobile responsiveness
 - Test on multiple browsers
 - Update VERSION_NOTES.md
@@ -336,8 +371,12 @@ For the full license text, see the [LICENSE](LICENSE) file or visit https://crea
 
 ### APIs & Services
 - [ipapi.co](https://ipapi.co) — IP Geolocation & WHOIS
+- [ipwho.is](https://ipwho.is) — Fallback IP provider
+- [dns.google](https://dns.google) — DNS-over-HTTPS (PTR records, DNSBL)
+- [OpenStreetMap](https://openstreetmap.org) — Map tiles
 
-### Fonts
+### Libraries
+- [Leaflet.js](https://leafletjs.com) — Interactive maps
 - [Syne](https://fonts.google.com/specimen/Syne) — Google Fonts
 - [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) — Google Fonts
 
