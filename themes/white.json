@@ -1,0 +1,23 @@
+{
+  "name": "White",
+  "id": "white",
+  "description": "White — monochrome white phosphor CRT, completing the classic monitor set",
+  "author": "We Got Us Some Industries",
+  "base": "terminal",
+  "variables": {
+    "accent":      "#e8e8e8",
+    "accent-rgb":  "232, 232, 232",
+    "accent-dim":  "#b0b0b0",
+    "page-bg":     "#0a0a0a",
+    "surface":     "#0d0d0d",
+    "inner-bg":    "#000000",
+    "danger":      "#ff4444",
+    "text":        "#e8e8e8",
+    "muted":       "rgba(232,232,232,0.5)",
+    "border":      "#e8e8e8",
+    "font-body":   "'Courier New', monospace",
+    "font-head":   "'Courier New', monospace",
+    "scanlines":   "repeating-linear-gradient(0deg, rgba(232,232,232,0.03) 0px, transparent 1px, transparent 2px, rgba(232,232,232,0.03) 3px)",
+    "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4) 100%)"
+  }
+}

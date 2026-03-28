@@ -7,6 +7,7 @@
     { "id": "gruvbox-dark", "file": "gruvbox-dark.json" },
     { "id": "tokyo-night",  "file": "tokyo-night.json"  },
     { "id": "amber",        "file": "amber.json"        },
+    { "id": "white",        "file": "white.json"        },
     { "id": "terminal",     "file": "terminal.json"     }
   ]
 }
