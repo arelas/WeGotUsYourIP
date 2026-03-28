@@ -25,8 +25,9 @@
 - **Browser Fingerprinting** — Detailed analysis of your device and browser
 - **Export Data** — Download all collected data as JSON
 - **Quick Tools** — Direct links to speed tests, DNS checks, and more
-- **API Rate Limit Handling** — Automatic fallback provider with live countdown
+- **API Rate Limit Handling** — Automatic fallback chain across three providers with live countdown
 - **Dual Theme** — Toggle between Terminal and WGUS brand themes, persisted via localStorage
+- **PWA / Offline Support** — Installable as a web app; app shell cached via service worker for offline use
 
 ## Features in Detail
 
@@ -51,7 +52,7 @@ Query detailed registration information for any IP address:
 - Currency and calling code
 - Continent, region, city details
 
-Powered by **ipapi.co** (same provider as the main IP lookup).
+Uses the same three-provider fallback chain as the main IP lookup (ipapi.co → ipwho.is → ipinfo.io), so WHOIS continues to work even when the primary provider is rate-limited.
 
 ### Reverse DNS
 - PTR record lookup via `dns.google/resolve` — no API key, no cost
@@ -81,11 +82,13 @@ Real DNSBL queries against 5 blacklists via DNS-over-HTTPS (`dns.google/resolve`
 - Gracefully degrades to manual links for IPv6 (DNSBL is IPv4-only by spec)
 
 ### API Rate Limit Handling
-- Catches HTTP 429 from ipapi.co immediately with a visible red banner
-- Displays a 60-second live countdown, then automatically retries
-- Falls back to **ipwho.is** (free tier, HTTPS, no key required)
-- Normalizes ipwho.is field names to the same internal shape — all downstream features (WHOIS, map, reverse DNS) continue to work transparently
-- Indicates which provider served the data if the fallback was used
+Three-provider fallback chain for both IP detection and WHOIS lookups:
+
+1. **ipapi.co** — primary provider; handles both hard HTTP 429s (60-second countdown before retry) and soft 200+error rate-limit responses
+2. **ipwho.is** — first fallback (free tier, HTTPS, no key required)
+3. **ipinfo.io** — second fallback (free tier, 50k req/month, no key required)
+
+All provider responses are normalised to the same internal shape — WHOIS, map, reverse DNS, and blacklist checks continue to work transparently regardless of which provider served the data. The UI indicates which provider was used when falling back.
 
 ### Browser Fingerprint
 - Browser type and version (Edge/Chrome/Firefox/Safari correctly detected)
@@ -103,7 +106,7 @@ Real DNSBL queries against 5 blacklists via DNS-over-HTTPS (`dns.google/resolve`
 Switch between two visual themes. Your preference is saved to `localStorage` and restored on next visit.
 
 - **Terminal** (default) — Dark hacker aesthetic: terminal green (#00ff66) on pure black, CRT scanlines, phosphor glow, Courier New. Toggle button is a fixed pill in the top-right corner.
-- **WGUS** — Brand-consistent theme matching wegotussome.com and qrcodes.wegotussome.com: Syne + JetBrains Mono, yellow-green accent (#e8ff47), warm dark surfaces, SVG noise texture. Includes a full breadcrumb navigation header (`wegotussome / ip`) with the toggle button integrated on the right side of the header — no floating button overlapping the UI.
+- **WGUS** — Brand-consistent theme matching wegotussome.com and qrcodes.wegotussome.com: JetBrains Mono throughout, yellow-green accent (#e8ff47), warm dark surfaces, SVG noise texture. Includes a full breadcrumb navigation header (`wegotussome / ip`) with the toggle button integrated on the right side of the header — no floating button overlapping the UI.
 
 ## Design Philosophy
 
@@ -116,7 +119,7 @@ Switch between two visual themes. Your preference is saved to `localStorage` and
 
 ### WGUS Theme
 Matches the **We Got Us Some Industries** brand system, built from the actual QR tool source:
-- Syne (headings/IP display) + JetBrains Mono (labels/UI/body)
+- JetBrains Mono throughout
 - Yellow-green accent (#e8ff47), text #f0f0f0, muted #666, border #222
 - SVG fractalNoise texture overlay
 - 4px border-radius throughout
@@ -131,15 +134,15 @@ Matches the **We Got Us Some Industries** brand system, built from the actual QR
 
 ### APIs
 - **ipapi.co** — Primary IP geolocation and WHOIS
-- **ipwho.is** — Fallback provider (rate limit handling)
+- **ipwho.is** — Fallback provider #1 (rate limit handling)
+- **ipinfo.io** — Fallback provider #2 (rate limit handling)
 - **dns.google/resolve** — DNS-over-HTTPS for PTR records and DNSBL queries
 
 ### Libraries
 - **Leaflet.js 1.9.4** (cdnjs) — Interactive map
 
 ### Fonts (WGUS theme)
-- **Syne** (Google Fonts) — Headings and values
-- **JetBrains Mono** (Google Fonts) — Labels and UI text
+- **JetBrains Mono** (Google Fonts) — All text
 
 ### Browser APIs
 - Clipboard API (copy functionality)
@@ -151,10 +154,10 @@ Matches the **We Got Us Some Industries** brand system, built from the actual QR
 
 ### Quick Deploy (Recommended)
 
-Simply upload `index.html` to your web server — no build process, no dependencies.
+Upload all four files to your web server — no build process, no dependencies.
 
 ```bash
-scp index.html user@yourserver.com:/var/www/ip.wegotussome.com/
+scp index.html manifest.json sw.js icon.svg user@yourserver.com:/var/www/ip.wegotussome.com/
 ```
 
 ### Local Development
@@ -173,7 +176,7 @@ python -m http.server 8000
 
 - Modern web browser (Chrome 90+, Firefox 88+, Safari 14+, Edge 90+)
 - Internet connection for API and map tile calls
-- HTTPS recommended (required for Clipboard API)
+- HTTPS required for Clipboard API and PWA/service worker installation
 
 ## Usage
 
@@ -303,6 +306,7 @@ Fully responsive design optimized for:
 ### API Privacy
 - **ipapi.co** — [Privacy Policy](https://ipapi.co/privacy/)
 - **ipwho.is** — [Privacy Policy](https://ipwho.is/)
+- **ipinfo.io** — [Privacy Policy](https://ipinfo.io/privacy-policy)
 - **dns.google** — [Google Privacy Policy](https://policies.google.com/privacy)
 - **OpenStreetMap** — [Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy)
 
@@ -316,8 +320,8 @@ Fully responsive design optimized for:
 **Issue**: Copy button not working  
 **Solution**: Ensure you're on HTTPS or localhost (Clipboard API requirement)
 
-**Issue**: WHOIS data not loading  
-**Solution**: Verify ipapi.co is accessible; check browser console for errors
+**Issue**: WHOIS data not loading
+**Solution**: The app will automatically try ipwho.is then ipinfo.io if ipapi.co is rate-limited; check the browser console for `[WGUSIP]` log entries if all three fail
 
 **Issue**: Map not rendering  
 **Solution**: Ensure cdnjs.cloudflare.com is reachable for Leaflet.js; confirm the IP has valid coordinates
@@ -325,8 +329,8 @@ Fully responsive design optimized for:
 **Issue**: Blacklist check shows all ERROR  
 **Solution**: Verify dns.google is accessible from your network
 
-**Issue**: WGUS theme fonts not loading  
-**Solution**: Ensure fonts.googleapis.com is reachable; site falls back to system fonts gracefully
+**Issue**: WGUS theme font not loading
+**Solution**: Ensure fonts.googleapis.com is reachable; site falls back to system monospace fonts gracefully
 
 **Issue**: Mobile layout broken  
 **Solution**: Clear browser cache and hard refresh (Ctrl+Shift+R)
@@ -336,7 +340,7 @@ Fully responsive design optimized for:
 ### Version 2.0 (Future)
 - [ ] Historical data charts
 - [ ] Multi-language support
-- [ ] PWA capabilities (offline mode)
+- [x] PWA capabilities (offline mode)
 - [ ] Bulk IP lookup
 
 ## Contributing
@@ -370,15 +374,15 @@ For the full license text, see the [LICENSE](LICENSE) file or visit https://crea
 **We Got Us Some Industries** — [wegotussome.com](https://wegotussome.com)
 
 ### APIs & Services
-- [ipapi.co](https://ipapi.co) — IP Geolocation & WHOIS
-- [ipwho.is](https://ipwho.is) — Fallback IP provider
+- [ipapi.co](https://ipapi.co) — Primary IP geolocation & WHOIS
+- [ipwho.is](https://ipwho.is) — Fallback provider #1
+- [ipinfo.io](https://ipinfo.io) — Fallback provider #2
 - [dns.google](https://dns.google) — DNS-over-HTTPS (PTR records, DNSBL)
 - [OpenStreetMap](https://openstreetmap.org) — Map tiles
 
 ### Libraries
 - [Leaflet.js](https://leafletjs.com) — Interactive maps
-- [Syne](https://fonts.google.com/specimen/Syne) — Google Fonts
-- [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) — Google Fonts
+- [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) — Google Fonts (WGUS theme)
 
 ### Inspiration
 - Retro terminal aesthetics
