@@ -1296,6 +1296,9 @@
             <button class="whois-toggle" id="cidr-toggle">
                 > CIDR CALC
             </button>
+            <button class="whois-toggle" id="share-btn">
+                > SHARE / PERMALINK
+            </button>
             <button class="whois-toggle" id="export-btn">
                 > EXPORT DATA
             </button>
@@ -1888,15 +1891,16 @@
         }
 
         // ── IP Info with rate-limit handling + fallback ───────────────
-        async function fetchWithFallback() {
+        async function fetchWithFallback(ip) {
             const banner = document.getElementById('rate-limit-banner');
             const countdownEl = document.getElementById('rate-limit-countdown');
             const statusEl = document.getElementById('rate-limit-status');
+            const ipPath = ip ? `${ip}/` : '';
 
             // Primary: ipapi.co
             let primaryFailed = false;
             try {
-                const primary = await fetch('https://ipapi.co/json/');
+                const primary = await fetch(`https://ipapi.co/${ipPath}json/`);
                 if (primary.status === 429) {
                     // Hard rate limit — show countdown before trying fallback
                     primaryFailed = true;
@@ -1926,7 +1930,7 @@
                 // Fallback 1: ipwho.is
                 statusEl.textContent = 'Trying fallback provider (ipwho.is)...';
                 try {
-                    const r1 = await fetch('https://ipwho.is/');
+                    const r1 = await fetch(`https://ipwho.is/${ip || ''}`);
                     const raw = await r1.json();
                     console.log('[WGUSIP] ipwho.is response:', raw);
                     if (raw && raw.ip && raw.success !== false) {
@@ -1960,7 +1964,7 @@
                 // Fallback 2: ipinfo.io
                 statusEl.textContent = 'Trying fallback provider (ipinfo.io)...';
                 try {
-                    const r2 = await fetch('https://ipinfo.io/json');
+                    const r2 = await fetch(`https://ipinfo.io/${ipPath}json`);
                     const raw = await r2.json();
                     console.log('[WGUSIP] ipinfo.io response:', raw);
                     if (raw && raw.ip && !raw.error) {
@@ -1999,9 +2003,9 @@
             throw new Error('All providers failed or rate limited.');
         }
 
-        async function getIPInfo() {
+        async function getIPInfo(overrideIP) {
             try {
-                const { data, source } = await fetchWithFallback();
+                const { data, source } = await fetchWithFallback(overrideIP);
 
                 const ipAddress = data.ip || 'Unknown';
                 currentIP = ipAddress;
@@ -2076,6 +2080,7 @@
                         </div>
                     </div>
                     ${source !== 'ipapi.co' ? `<div style="margin-top:10px;font-size:0.75em;opacity:0.5;">> Data via fallback provider (${source})</div>` : ''}
+                    ${overrideIP ? `<div style="margin-top:10px;font-size:0.75em;opacity:0.6;border-top:1px solid var(--border);padding-top:10px;">> SHARED LOOKUP — <a href="${location.origin}${location.pathname}?ip=${ipAddress}" style="color:inherit;opacity:0.8;">${location.origin}${location.pathname}?ip=${ipAddress}</a></div>` : ''}
                 `;
 
                 // Show action buttons and custom IP input
@@ -2177,8 +2182,15 @@
 
         loadThemes();
 
-        // Fetch IP info when page loads
-        getIPInfo();
+        // Fetch IP info when page loads — honour ?ip= permalink
+        (function () {
+            const urlIP = new URLSearchParams(location.search).get('ip');
+            if (urlIP && isValidIP(urlIP.trim())) {
+                getIPInfo(urlIP.trim()).then(() => toggleSection('whois'));
+            } else {
+                getIPInfo();
+            }
+        })();
 
         // ── Section toggle system ─────────────────────────────────────
         const SECTIONS = {
@@ -2233,6 +2245,18 @@
         document.getElementById('cidr-calc-btn').addEventListener('click', displayCIDR);
         document.getElementById('cidr-input').addEventListener('keypress', e => {
             if (e.key === 'Enter') displayCIDR();
+        });
+
+        // Share / permalink button
+        document.getElementById('share-btn').addEventListener('click', function () {
+            const url = `${location.origin}${location.pathname}?ip=${currentIP}`;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = document.getElementById('share-btn');
+                btn.textContent = '> LINK COPIED!';
+                setTimeout(() => { btn.textContent = '> SHARE / PERMALINK'; }, 2000);
+            }).catch(() => {
+                prompt('> Copy this permalink:', url);
+            });
         });
 
         // Export button
