@@ -371,18 +371,21 @@
         /* Loading */
         body.theme-wgus .loading { color: var(--muted); font-size: 0.85rem; }
 
-        /* Theme toggle in WGUS mode */
-        body.theme-wgus #theme-toggle {
+        /* Hamburger in WGUS mode */
+        body.theme-wgus #theme-hamburger {
             background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text);
-            font-family: var(--font-body);
+            border-color: var(--border);
+            box-shadow: none;
         }
-        body.theme-wgus #theme-toggle:hover {
+        body.theme-wgus #theme-hamburger:hover {
             background: var(--accent);
             border-color: var(--accent);
-            color: #000;
             box-shadow: none;
+        }
+        body.theme-wgus #theme-dropdown {
+            background: var(--surface);
+            border-color: var(--border);
+            box-shadow: 0 4px 16px rgba(0,0,0,0.15);
         }
 
         /* WGUS: rate limit banner */
@@ -422,32 +425,6 @@
         body.theme-wgus .blacklist-score.all-clean { color: var(--accent); }
         body.theme-wgus .blacklist-score.some-listed { color: var(--danger); }
 
-        /* In WGUS mode: hide the fixed floating toggle, use the header one instead */
-        body.theme-wgus #theme-toggle { display: none; }
-
-        .wgus-header-toggle {
-            display: none; /* hidden in terminal mode */
-            background: transparent;
-            border: 1px solid var(--border);
-            color: var(--muted);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.62rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            padding: 0.2rem 0.55rem;
-            border-radius: 2px;
-            cursor: pointer;
-            transition: border-color 0.15s, color 0.15s;
-            white-space: nowrap;
-        }
-        .wgus-header-toggle:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-        body.theme-wgus .wgus-header-toggle {
-            display: inline-flex;
-            align-items: center;
-        }
 
         #wgus-header {
             display: none;
@@ -494,29 +471,75 @@
             border-radius: 2px;
         }
 
-        /* ── THEME TOGGLE BUTTON ─────────────────────────────────── */
-        #theme-toggle {
+        /* ── HAMBURGER THEME MENU ────────────────────────────────── */
+        #theme-menu {
             position: fixed;
             top: 16px;
             right: 16px;
-            z-index: 100;
+            z-index: 1000;
+        }
+        #theme-hamburger {
             background: var(--inner-bg);
             border: 1px solid var(--accent);
             color: var(--accent);
-            font-family: var(--font-body);
-            font-size: 0.75em;
-            letter-spacing: 0.05em;
-            padding: 6px 12px;
+            padding: 7px 9px;
             border-radius: 4px;
             cursor: pointer;
-            transition: background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
-            white-space: nowrap;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
         }
-        #theme-toggle:hover {
+        #theme-hamburger span {
+            display: block;
+            width: 16px;
+            height: 2px;
+            background: currentColor;
+            border-radius: 1px;
+            transition: background 0.2s;
+        }
+        #theme-hamburger:hover {
             background: var(--accent);
             color: var(--inner-bg);
             box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.4);
         }
+        #theme-dropdown {
+            display: none;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            background: var(--inner-bg);
+            border: 1px solid var(--accent);
+            border-radius: 4px;
+            min-width: 150px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+            overflow: hidden;
+        }
+        #theme-dropdown.open { display: block; }
+        .theme-option {
+            display: flex;
+            align-items: center;
+            gap: 9px;
+            padding: 9px 13px;
+            cursor: pointer;
+            font-family: var(--font-body);
+            font-size: 0.72em;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: var(--muted);
+            transition: background 0.15s, color 0.15s;
+        }
+        .theme-option:hover { background: rgba(var(--accent-rgb), 0.1); color: var(--text); }
+        .theme-option.active { color: var(--accent); }
+        .theme-dot {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            border: 1px solid currentColor;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        .theme-option.active .theme-dot { background: var(--accent); }
     </style>
     <style>
         * {
@@ -1231,7 +1254,22 @@
     </style>
 </head>
 <body>
-    <button id="theme-toggle" title="Switch theme" onclick="toggleTheme()">● WGUS</button>
+    <div id="theme-menu">
+        <button id="theme-hamburger" onclick="toggleThemeMenu()" title="Switch theme" aria-label="Switch theme">
+            <span></span><span></span><span></span>
+        </button>
+        <div id="theme-dropdown">
+            <div class="theme-option" data-theme="wgus" onclick="setTheme('wgus')">
+                <span class="theme-dot"></span>Dark WGUS
+            </div>
+            <div class="theme-option" data-theme="wgus-light" onclick="setTheme('wgus-light')">
+                <span class="theme-dot"></span>Light WGUS
+            </div>
+            <div class="theme-option" data-theme="terminal" onclick="setTheme('terminal')">
+                <span class="theme-dot"></span>Terminal
+            </div>
+        </div>
+    </div>
 
     <!-- WGUS nav header (hidden in terminal mode) -->
     <header id="wgus-header">
@@ -1239,10 +1277,7 @@
             <div class="wgus-logo-dot"></div>
             wegotussome <span class="wgus-breadcrumb">&nbsp;/ ip</span>
         </a>
-        <div style="display:flex;align-items:center;gap:0.75rem;">
-            <span class="wgus-badge">self-hosted</span>
-            <button class="wgus-header-toggle" onclick="toggleTheme()">☀ LIGHT</button>
-        </div>
+        <span class="wgus-badge">self-hosted</span>
     </header>
     <div class="container">
         <div style="text-align: left; margin-bottom: 20px; font-size: 0.9em; color: var(--accent); opacity: 0.7;">
@@ -1983,36 +2018,34 @@
             }
         }
 
-        // ── Theme toggle ─────────────────────────────────────────────
+        // ── Theme menu ───────────────────────────────────────────────
         const THEME_KEY = 'wgus-ip-theme';
-        const btn = document.getElementById('theme-toggle');
-        const THEME_CYCLE = ['wgus', 'wgus-light', 'terminal'];
 
         function applyTheme(theme) {
-            const headerBtn = document.querySelector('.wgus-header-toggle');
             const isWgus = theme === 'wgus' || theme === 'wgus-light';
-
-            // Apply / remove body classes
             document.body.classList.toggle('theme-wgus', isWgus);
             document.body.classList.toggle('theme-wgus-light', theme === 'wgus-light');
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.theme === theme);
+            });
+        }
 
-            if (theme === 'wgus') {
-                if (headerBtn) headerBtn.textContent = '☀ LIGHT';
-            } else if (theme === 'wgus-light') {
-                if (headerBtn) headerBtn.textContent = '⬡ TERMINAL';
-            } else {
-                // terminal
-                btn.textContent = '● WGUS';
+        function setTheme(theme) {
+            localStorage.setItem(THEME_KEY, theme);
+            applyTheme(theme);
+            document.getElementById('theme-dropdown').classList.remove('open');
+        }
+
+        function toggleThemeMenu() {
+            document.getElementById('theme-dropdown').classList.toggle('open');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('#theme-menu')) {
+                document.getElementById('theme-dropdown').classList.remove('open');
             }
-        }
-
-        function toggleTheme() {
-            const current = localStorage.getItem(THEME_KEY) || 'wgus';
-            const idx = THEME_CYCLE.indexOf(current);
-            const next = THEME_CYCLE[(idx + 1) % THEME_CYCLE.length];
-            localStorage.setItem(THEME_KEY, next);
-            applyTheme(next);
-        }
+        });
 
         // Apply saved theme on load
         applyTheme(localStorage.getItem(THEME_KEY) || 'wgus');
