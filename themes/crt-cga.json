@@ -14,7 +14,7 @@
     "danger":      "#bb11bb",
     "text":        "#bbbbbb",
     "muted":       "rgba(187,187,187,0.5)",
-    "border":      "#11bbbb",
+    "border":      "#bb11bb",
     "font-body":   "'Courier New', monospace",
     "font-head":   "'Courier New', monospace",
     "scanlines":   "repeating-linear-gradient(0deg, rgba(17,187,187,0.04) 0px, transparent 1px, transparent 2px, rgba(17,187,187,0.04) 3px)",
