@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wegotusyourip-v7';
+const CACHE_NAME = 'wegotusyourip-v8';
 
 const APP_SHELL = [
     './',
