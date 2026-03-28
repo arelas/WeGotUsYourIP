@@ -1,7 +1,7 @@
 {
-  "name": "Terminal",
-  "id": "terminal",
-  "description": "Classic terminal hacker aesthetic — phosphor green on black",
+  "name": "CRT-Green",
+  "id": "crt-green",
+  "description": "CRT-Green — classic phosphor green on black",
   "author": "We Got Us Some Industries",
   "base": "terminal",
   "variables": {

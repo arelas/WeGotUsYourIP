@@ -1,7 +1,7 @@
 {
-  "name": "Amber",
-  "id": "amber",
-  "description": "Amber — warm phosphor monitor glow, like a vintage CRT",
+  "name": "CRT-Amber",
+  "id": "crt-amber",
+  "description": "CRT-Amber — warm amber phosphor glow, like a vintage monitor",
   "author": "We Got Us Some Industries",
   "base": "terminal",
   "variables": {

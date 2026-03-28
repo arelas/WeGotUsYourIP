@@ -1,7 +1,7 @@
 {
-  "name": "White",
-  "id": "white",
-  "description": "White — monochrome white phosphor CRT, completing the classic monitor set",
+  "name": "CRT-White",
+  "id": "crt-white",
+  "description": "CRT-White — monochrome white phosphor CRT, completing the classic monitor set",
   "author": "We Got Us Some Industries",
   "base": "terminal",
   "variables": {
