@@ -1,0 +1,23 @@
+{
+  "name": "CRT-CGA",
+  "id": "crt-cga",
+  "description": "CRT-CGA — full IBM CGA palette: cyan, magenta, grey and black",
+  "author": "We Got Us Some Industries",
+  "base": "terminal",
+  "variables": {
+    "accent":      "#11bbbb",
+    "accent-rgb":  "17, 187, 187",
+    "accent-dim":  "#115555",
+    "page-bg":     "#111111",
+    "surface":     "#115555",
+    "inner-bg":    "#111111",
+    "danger":      "#bb11bb",
+    "text":        "#bbbbbb",
+    "muted":       "rgba(187,187,187,0.5)",
+    "border":      "#11bbbb",
+    "font-body":   "'Courier New', monospace",
+    "font-head":   "'Courier New', monospace",
+    "scanlines":   "repeating-linear-gradient(0deg, rgba(17,187,187,0.04) 0px, transparent 1px, transparent 2px, rgba(17,187,187,0.04) 3px)",
+    "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4) 100%)"
+  }
+}
