@@ -1,0 +1,23 @@
+{
+  "name": "Monokai",
+  "id": "monokai",
+  "description": "Monokai — neon greens and pinks on near-black, a devtools classic",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#a6e22e",
+    "accent-rgb":  "166, 226, 46",
+    "accent-dim":  "#86c20e",
+    "page-bg":     "#272822",
+    "surface":     "#3e3d32",
+    "inner-bg":    "#1e1f1c",
+    "danger":      "#f92672",
+    "text":        "#f8f8f2",
+    "muted":       "#75715e",
+    "border":      "#3e3d32",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

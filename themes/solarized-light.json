@@ -1,0 +1,23 @@
+{
+  "name": "Solarized Light",
+  "id": "solarized-light",
+  "description": "Solarized Light — warm cream background, the precision-designed light palette",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#268bd2",
+    "accent-rgb":  "38, 139, 210",
+    "accent-dim":  "#1a6ea0",
+    "page-bg":     "#fdf6e3",
+    "surface":     "#eee8d5",
+    "inner-bg":    "#f5efdc",
+    "danger":      "#dc322f",
+    "text":        "#657b83",
+    "muted":       "#93a1a1",
+    "border":      "#d4cdb6",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

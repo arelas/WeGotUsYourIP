@@ -1,0 +1,23 @@
+{
+  "name": "One Dark",
+  "id": "one-dark",
+  "description": "One Dark — Atom's signature muted blue-grey dark theme",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#61afef",
+    "accent-rgb":  "97, 175, 239",
+    "accent-dim":  "#4192d0",
+    "page-bg":     "#282c34",
+    "surface":     "#2c313a",
+    "inner-bg":    "#21252b",
+    "danger":      "#e06c75",
+    "text":        "#abb2bf",
+    "muted":       "#5c6370",
+    "border":      "#3e4451",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}
