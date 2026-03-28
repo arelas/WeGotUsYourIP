@@ -337,11 +337,23 @@ Fully responsive design optimized for:
 
 ## Roadmap
 
+### Completed
+- [x] PWA capabilities (offline mode) — service worker, manifest, installable
+- [x] Wider desktop layout — container expanded to 1000px
+- [x] Multi-provider fallback — ipapi.co → ipwho.is → ipinfo.io for both IP detection and WHOIS
+- [x] WHOIS fallback resilience — isolated per-provider error handling
+
 ### Version 2.0 (Future)
 - [ ] Historical data charts
 - [ ] Multi-language support
-- [x] PWA capabilities (offline mode)
 - [ ] Bulk IP lookup
+- [ ] IP comparison — look up two IPs side by side
+- [ ] Share / permalink — `?ip=1.2.3.4` auto-runs lookup on page load
+- [ ] Traceroute visualisation — show network hops plotted on the map
+- [ ] ASN lookup — dedicated Autonomous System info panel
+- [ ] CIDR / subnet calculator — fits the network tool theme
+- [ ] Clipboard history — remember the last N IPs looked up
+- [ ] Dark / light mode — true light theme variant alongside the existing Terminal and WGUS themes
 
 ## Contributing
 
