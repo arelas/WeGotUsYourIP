@@ -1,0 +1,23 @@
+{
+  "name": "Terminal",
+  "id": "terminal",
+  "description": "Classic terminal hacker aesthetic — phosphor green on black",
+  "author": "We Got Us Some Industries",
+  "base": "terminal",
+  "variables": {
+    "accent":      "#00ff66",
+    "accent-rgb":  "0, 255, 102",
+    "accent-dim":  "#00cc55",
+    "page-bg":     "#0a0a0a",
+    "surface":     "#0d0d0d",
+    "inner-bg":    "#000000",
+    "danger":      "#ff0000",
+    "text":        "#00ff66",
+    "muted":       "rgba(0,255,102,0.5)",
+    "border":      "#00ff66",
+    "font-body":   "'Courier New', monospace",
+    "font-head":   "'Courier New', monospace",
+    "scanlines":   "repeating-linear-gradient(0deg, rgba(0,255,102,0.03) 0px, transparent 1px, transparent 2px, rgba(0,255,102,0.03) 3px)",
+    "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4) 100%)"
+  }
+}

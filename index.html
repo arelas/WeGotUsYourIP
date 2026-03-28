@@ -80,46 +80,14 @@
         }
         body.theme-wgus::after { background: none; }
 
-        /* ── WGUS LIGHT THEME ────────────────────────────────────────
-           Applied as a second class alongside theme-wgus.
-           Only overrides color variables and a few structural tweaks.
-           All structural WGUS rules from body.theme-wgus still apply. */
-        body.theme-wgus-light {
-            --accent:       #3d00cc;
-            --accent-rgb:   61, 0, 204;
-            --accent-dim:   #3000a8;
-            --page-bg:      #f6f8ff;
-            --surface:      #ffffff;
-            --inner-bg:     #edf0ff;
-            --danger:       #b83232;
-            --text:         #0a0020;
-            --muted:        #7070aa;
-            --border:       #c0c8f0;
-        }
-
-        /* Soften noise texture on light background */
-        body.theme-wgus-light::before {
+        /* ── LIGHT BASE STRUCTURAL TWEAKS ───────────────────────────
+           Applied via data-theme attribute for any light-base theme.
+           Colors come from JS-applied inline CSS variables. */
+        body[data-theme-light]::before {
             opacity: 0.15;
         }
-
-        /* Lighter shadow on container */
-        body.theme-wgus-light .container {
+        body[data-theme-light] .container {
             box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
-        }
-
-        /* IP display box: lighter border */
-        body.theme-wgus-light .ip-display {
-            border-color: var(--border);
-        }
-
-        /* Info items: white surface with subtle border */
-        body.theme-wgus-light .info-item {
-            background: var(--surface);
-        }
-
-        /* Rate limit banner */
-        body.theme-wgus-light #rate-limit-banner {
-            background: #fff5f5;
         }
 
         /* WGUS nav header */
@@ -1248,17 +1216,7 @@
         <button id="theme-hamburger" onclick="toggleThemeMenu()" title="Switch theme" aria-label="Switch theme">
             <span></span><span></span><span></span>
         </button>
-        <div id="theme-dropdown">
-            <div class="theme-option" data-theme="wgus" onclick="setTheme('wgus')">
-                <span class="theme-dot"></span>Dark WGUS
-            </div>
-            <div class="theme-option" data-theme="wgus-light" onclick="setTheme('wgus-light')">
-                <span class="theme-dot"></span>Light WGUS
-            </div>
-            <div class="theme-option" data-theme="terminal" onclick="setTheme('terminal')">
-                <span class="theme-dot"></span>Terminal
-            </div>
-        </div>
+        <div id="theme-dropdown"></div>
     </div>
 
     <!-- WGUS nav header (hidden in terminal mode) -->
@@ -2007,21 +1965,36 @@
             }
         }
 
-        // ── Theme menu ───────────────────────────────────────────────
+        // ── Theme system ─────────────────────────────────────────────
         const THEME_KEY = 'wgus-ip-theme';
+        const loadedThemes = {};
 
-        function applyTheme(theme) {
-            const isWgus = theme === 'wgus' || theme === 'wgus-light';
-            document.body.classList.toggle('theme-wgus', isWgus);
-            document.body.classList.toggle('theme-wgus-light', theme === 'wgus-light');
+        function applyTheme(themeId) {
+            const theme = loadedThemes[themeId];
+            if (!theme) return;
+
+            // Toggle WGUS layout class
+            document.body.classList.toggle('theme-wgus', theme.base === 'wgus');
+
+            // Light-base structural flag — detected by brightness of page-bg
+            const hex = (theme.variables['page-bg'] || '#000').replace('#', '');
+            const brightness = parseInt(hex.slice(0, 2), 16);
+            document.body.toggleAttribute('data-theme-light', brightness > 0x88);
+
+            // Apply all CSS variables inline
+            Object.entries(theme.variables).forEach(([key, val]) => {
+                document.body.style.setProperty(`--${key}`, val);
+            });
+
+            // Mark active option in dropdown
             document.querySelectorAll('.theme-option').forEach(opt => {
-                opt.classList.toggle('active', opt.dataset.theme === theme);
+                opt.classList.toggle('active', opt.dataset.theme === themeId);
             });
         }
 
-        function setTheme(theme) {
-            localStorage.setItem(THEME_KEY, theme);
-            applyTheme(theme);
+        function setTheme(themeId) {
+            localStorage.setItem(THEME_KEY, themeId);
+            applyTheme(themeId);
             document.getElementById('theme-dropdown').classList.remove('open');
         }
 
@@ -2029,15 +2002,41 @@
             document.getElementById('theme-dropdown').classList.toggle('open');
         }
 
-        // Close dropdown when clicking outside
         document.addEventListener('click', function(e) {
             if (!e.target.closest('#theme-menu')) {
                 document.getElementById('theme-dropdown').classList.remove('open');
             }
         });
 
-        // Apply saved theme on load
-        applyTheme(localStorage.getItem(THEME_KEY) || 'wgus');
+        async function loadThemes() {
+            try {
+                const manifest = await fetch('./themes/index.json').then(r => r.json());
+                const themes = await Promise.all(
+                    manifest.themes.map(entry =>
+                        fetch(`./themes/${entry.file}`).then(r => r.json())
+                    )
+                );
+
+                const dropdown = document.getElementById('theme-dropdown');
+                dropdown.innerHTML = '';
+                themes.forEach(theme => {
+                    loadedThemes[theme.id] = theme;
+                    const opt = document.createElement('div');
+                    opt.className = 'theme-option';
+                    opt.dataset.theme = theme.id;
+                    opt.title = theme.description || '';
+                    opt.onclick = () => setTheme(theme.id);
+                    opt.innerHTML = `<span class="theme-dot"></span>${theme.name}`;
+                    dropdown.appendChild(opt);
+                });
+
+                applyTheme(localStorage.getItem(THEME_KEY) || 'wgus-dark');
+            } catch (e) {
+                console.error('[WGUSIP] Failed to load themes:', e);
+            }
+        }
+
+        loadThemes();
 
         // Fetch IP info when page loads
         getIPInfo();

@@ -1,0 +1,23 @@
+{
+  "name": "WGUS Dark",
+  "id": "wgus-dark",
+  "description": "Default dark theme — the signature WGUS aesthetic",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#e8ff47",
+    "accent-rgb":  "232, 255, 71",
+    "accent-dim":  "#b8cc30",
+    "page-bg":     "#0a0a0a",
+    "surface":     "#111111",
+    "inner-bg":    "#111111",
+    "danger":      "#e05252",
+    "text":        "#f0f0f0",
+    "muted":       "#666666",
+    "border":      "#222222",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

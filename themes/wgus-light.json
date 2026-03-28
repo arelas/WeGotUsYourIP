@@ -1,0 +1,23 @@
+{
+  "name": "WGUS Light",
+  "id": "wgus-light",
+  "description": "Light theme — electric indigo on indigo-tinted white",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#3d00cc",
+    "accent-rgb":  "61, 0, 204",
+    "accent-dim":  "#3000a8",
+    "page-bg":     "#f6f8ff",
+    "surface":     "#ffffff",
+    "inner-bg":    "#edf0ff",
+    "danger":      "#b83232",
+    "text":        "#0a0020",
+    "muted":       "#7070aa",
+    "border":      "#c0c8f0",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}
