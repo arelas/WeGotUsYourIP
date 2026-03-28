@@ -1,0 +1,17 @@
+{
+  "name": "We Got Us Your IP",
+  "short_name": "WGUSIP",
+  "description": "IP analysis tool with terminal hacker aesthetic",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#00ff66",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

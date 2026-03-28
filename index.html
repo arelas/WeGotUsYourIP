@@ -21,9 +21,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>We Got Us Your IP</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#00ff66">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="WGUSIP">
+    <link rel="apple-touch-icon" href="icon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
     <style>
@@ -58,7 +64,7 @@
             --muted:        #666666;
             --border:       #222222;
             --font-body:    'JetBrains Mono', monospace;
-            --font-head:    'Syne', sans-serif;
+            --font-head:    'JetBrains Mono', monospace;
             --scanlines:    none;
             --vignette:     none;
             color:          var(--text);
@@ -140,7 +146,7 @@
 
         /* IP address number */
         body.theme-wgus .ip-address {
-            font-family: var(--font-head);
+            font-family: var(--font-body);
             font-weight: 800;
             font-size: 2.8em;
             letter-spacing: -0.02em;
@@ -413,7 +419,7 @@
             background: var(--page-bg);
         }
         .wgus-logo {
-            font-family: 'Syne', sans-serif;
+            font-family: 'JetBrains Mono', monospace;
             font-weight: 800;
             font-size: 1rem;
             letter-spacing: -0.02em;
@@ -527,7 +533,7 @@
             background: var(--surface);
             border-radius: 20px;
             padding: 40px;
-            max-width: 600px;
+            max-width: 1000px;
             width: 100%;
             box-shadow: 0 0 50px rgba(var(--accent-rgb), 0.2), 0 8px 32px rgba(0, 0, 0, 0.8);
             border: 2px solid var(--accent);
@@ -1421,16 +1427,9 @@
             const whoisContent = document.getElementById('whois-content');
             whoisContent.innerHTML = '<div class="loading">> QUERYING WHOIS DATABASE...</div>';
 
-            try {
-                const response = await fetch(`https://ipapi.co/${ip}/json/`);
-                const data = await response.json();
-
-                if (data.error) {
-                    throw new Error(data.reason || 'Lookup failed');
-                }
-
+            function renderWhois(data, source) {
                 whoisContent.innerHTML = `
-                    <div class="whois-line">> WHOIS QUERY COMPLETE FOR: ${ip}</div>
+                    <div class="whois-line">> WHOIS QUERY COMPLETE FOR: ${ip}${source !== 'ipapi.co' ? ` <span style="opacity:0.5;font-size:0.85em">(via ${source})</span>` : ''}</div>
                     <div class="whois-line whois-separator">────────────────────────────────────────</div>
                     <div class="whois-line"><span class="whois-label">IP Address:</span><span class="whois-value">${data.ip || 'N/A'}</span></div>
                     <div class="whois-line"><span class="whois-label">Type:</span><span class="whois-value">${data.version || 'IPv4'}</span></div>
@@ -1452,15 +1451,93 @@
                     <div class="whois-line whois-separator">────────────────────────────────────────</div>
                     <div class="whois-line">> END OF WHOIS DATA</div>
                 `;
-            } catch (error) {
-                console.error('Error fetching WHOIS:', error);
-                document.getElementById('whois-content').innerHTML = `
-                    <div class="whois-line" style="color: var(--danger);">
-                        > ERROR: WHOIS LOOKUP FAILED<br>
-                        > ${error.message}
-                    </div>
-                `;
             }
+
+            // Provider 1: ipapi.co
+            try {
+                const response = await fetch(`https://ipapi.co/${ip}/json/`);
+                const data = await response.json();
+                if (response.status !== 429 && !data.error) {
+                    return renderWhois(data, 'ipapi.co');
+                }
+                console.warn('[WGUSIP] WHOIS ipapi.co failed:', data.reason || response.status);
+            } catch (e) {
+                console.warn('[WGUSIP] WHOIS ipapi.co error:', e.message);
+            }
+
+            // Provider 2: ipwho.is
+            whoisContent.innerHTML = '<div class="loading">> TRYING FALLBACK PROVIDER...</div>';
+            try {
+                const r1 = await fetch(`https://ipwho.is/${ip}`);
+                const raw = await r1.json();
+                console.log('[WGUSIP] WHOIS ipwho.is response:', raw);
+                if (raw && raw.ip && raw.success !== false) {
+                    return renderWhois({
+                        ip:            raw.ip,
+                        version:       raw.type,
+                        city:          raw.city,
+                        region:        raw.region,
+                        country_name:  raw.country,
+                        country_code:  raw.country_code,
+                        continent_code: raw.continent_code || '',
+                        org:           raw.connection?.org || raw.connection?.isp || '',
+                        asn:           raw.connection?.asn ? `AS${raw.connection.asn}` : '',
+                        timezone:      raw.timezone?.id || '',
+                        utc_offset:    raw.timezone?.utc || '',
+                        postal:        raw.postal,
+                        latitude:      raw.latitude,
+                        longitude:     raw.longitude,
+                        currency:      raw.currency?.code || '',
+                        currency_name: raw.currency?.name || '',
+                        calling_code:  raw.calling_code || '',
+                    }, 'ipwho.is');
+                }
+                console.warn('[WGUSIP] WHOIS ipwho.is failed:', raw?.message);
+            } catch (e) {
+                console.warn('[WGUSIP] WHOIS ipwho.is error:', e.message);
+            }
+
+            // Provider 3: ipinfo.io
+            whoisContent.innerHTML = '<div class="loading">> TRYING SECONDARY FALLBACK...</div>';
+            try {
+                const r2 = await fetch(`https://ipinfo.io/${ip}/json`);
+                const raw = await r2.json();
+                console.log('[WGUSIP] WHOIS ipinfo.io response:', raw);
+                if (raw && raw.ip && !raw.error) {
+                    const [lat, lon] = (raw.loc || '0,0').split(',').map(Number);
+                    const [asn, ...orgParts] = (raw.org || '').split(' ');
+                    return renderWhois({
+                        ip:            raw.ip,
+                        version:       raw.ip.includes(':') ? 'IPv6' : 'IPv4',
+                        city:          raw.city,
+                        region:        raw.region,
+                        country_name:  raw.country,
+                        country_code:  raw.country,
+                        continent_code: '',
+                        org:           orgParts.join(' ') || raw.org || '',
+                        asn:           asn || '',
+                        timezone:      raw.timezone || '',
+                        utc_offset:    '',
+                        postal:        raw.postal,
+                        latitude:      lat,
+                        longitude:     lon,
+                        currency:      '',
+                        currency_name: '',
+                        calling_code:  '',
+                    }, 'ipinfo.io');
+                }
+                console.warn('[WGUSIP] WHOIS ipinfo.io failed:', raw?.error);
+            } catch (e) {
+                console.warn('[WGUSIP] WHOIS ipinfo.io error:', e.message);
+            }
+
+            // All providers exhausted
+            whoisContent.innerHTML = `
+                <div class="whois-line" style="color: var(--danger);">
+                    > ERROR: WHOIS LOOKUP FAILED<br>
+                    > All providers exhausted. Check browser console for details.
+                </div>
+            `;
         }
 
         // ── Reverse DNS ───────────────────────────────────────────────
@@ -1649,63 +1726,111 @@
 
         // ── IP Info with rate-limit handling + fallback ───────────────
         async function fetchWithFallback() {
+            const banner = document.getElementById('rate-limit-banner');
+            const countdownEl = document.getElementById('rate-limit-countdown');
+            const statusEl = document.getElementById('rate-limit-status');
+
             // Primary: ipapi.co
-            const primary = await fetch('https://ipapi.co/json/');
-            if (primary.status !== 429) {
-                const data = await primary.json();
-                if (!data.error) return { data, source: 'ipapi.co' };
+            let primaryFailed = false;
+            try {
+                const primary = await fetch('https://ipapi.co/json/');
+                if (primary.status === 429) {
+                    // Hard rate limit — show countdown before trying fallback
+                    primaryFailed = true;
+                    banner.classList.add('visible');
+                    await new Promise(resolve => {
+                        let secs = 60;
+                        countdownEl.textContent = secs;
+                        const tick = setInterval(() => {
+                            secs--;
+                            countdownEl.textContent = secs;
+                            if (secs <= 0) { clearInterval(tick); resolve(); }
+                        }, 1000);
+                    });
+                } else {
+                    const data = await primary.json();
+                    if (!data.error) return { data, source: 'ipapi.co' };
+                    // Soft error (200 with error field) — go straight to fallback
+                    primaryFailed = true;
+                    banner.classList.add('visible');
+                }
+            } catch (e) {
+                primaryFailed = true;
+                banner.classList.add('visible');
             }
 
-            // Hit rate limit — show countdown banner and wait 60s
-            if (primary.status === 429) {
-                const banner = document.getElementById('rate-limit-banner');
-                const countdownEl = document.getElementById('rate-limit-countdown');
-                const statusEl = document.getElementById('rate-limit-status');
-                banner.classList.add('visible');
-
-                await new Promise(resolve => {
-                    let secs = 60;
-                    countdownEl.textContent = secs;
-                    const tick = setInterval(() => {
-                        secs--;
-                        countdownEl.textContent = secs;
-                        if (secs <= 0) { clearInterval(tick); resolve(); }
-                    }, 1000);
-                });
-
+            if (primaryFailed) {
+                // Fallback 1: ipwho.is
                 statusEl.textContent = 'Trying fallback provider (ipwho.is)...';
-
-                // Fallback: ipwho.is (free, HTTPS, no key required)
                 try {
-                    const fallback = await fetch('https://ipwho.is/');
-                    const raw = await fallback.json();
-                    if (raw.success !== false) {
-                        // Normalize ipwho.is fields to ipapi.co shape
+                    const r1 = await fetch('https://ipwho.is/');
+                    const raw = await r1.json();
+                    console.log('[WGUSIP] ipwho.is response:', raw);
+                    if (raw && raw.ip && raw.success !== false) {
                         const data = {
-                            ip:           raw.ip,
-                            version:      raw.type,
-                            city:         raw.city,
-                            region:       raw.region,
-                            country_name: raw.country,
-                            country_code: raw.country_code,
-                            org:          raw.connection?.org || raw.connection?.isp || '',
-                            asn:          raw.connection?.asn ? `AS${raw.connection.asn}` : '',
-                            timezone:     raw.timezone?.id || '',
-                            utc_offset:   raw.timezone?.utc || '',
-                            postal:       raw.postal,
-                            latitude:     raw.latitude,
-                            longitude:    raw.longitude,
-                            currency:     raw.currency?.code || '',
+                            ip:            raw.ip,
+                            version:       raw.type,
+                            city:          raw.city,
+                            region:        raw.region,
+                            country_name:  raw.country,
+                            country_code:  raw.country_code,
+                            org:           raw.connection?.org || raw.connection?.isp || '',
+                            asn:           raw.connection?.asn ? `AS${raw.connection.asn}` : '',
+                            timezone:      raw.timezone?.id || '',
+                            utc_offset:    raw.timezone?.utc || '',
+                            postal:        raw.postal,
+                            latitude:      raw.latitude,
+                            longitude:     raw.longitude,
+                            currency:      raw.currency?.code || '',
                             currency_name: raw.currency?.name || '',
-                            calling_code: raw.calling_code || '',
+                            calling_code:  raw.calling_code || '',
                             continent_code: raw.continent_code || '',
                         };
                         banner.classList.remove('visible');
                         return { data, source: 'ipwho.is' };
                     }
+                    console.warn('[WGUSIP] ipwho.is returned error:', raw?.message);
                 } catch (e) {
-                    statusEl.textContent = `Fallback also failed: ${e.message}`;
+                    console.warn('[WGUSIP] ipwho.is fetch failed:', e.message);
                 }
+
+                // Fallback 2: ipinfo.io
+                statusEl.textContent = 'Trying fallback provider (ipinfo.io)...';
+                try {
+                    const r2 = await fetch('https://ipinfo.io/json');
+                    const raw = await r2.json();
+                    console.log('[WGUSIP] ipinfo.io response:', raw);
+                    if (raw && raw.ip && !raw.error) {
+                        const [lat, lon] = (raw.loc || '0,0').split(',').map(Number);
+                        const [asn, ...orgParts] = (raw.org || '').split(' ');
+                        const data = {
+                            ip:            raw.ip,
+                            version:       raw.ip.includes(':') ? 'IPv6' : 'IPv4',
+                            city:          raw.city,
+                            region:        raw.region,
+                            country_name:  raw.country,
+                            country_code:  raw.country,
+                            org:           orgParts.join(' ') || raw.org || '',
+                            asn:           asn || '',
+                            timezone:      raw.timezone || '',
+                            utc_offset:    '',
+                            postal:        raw.postal,
+                            latitude:      lat,
+                            longitude:     lon,
+                            currency:      '',
+                            currency_name: '',
+                            calling_code:  '',
+                            continent_code: '',
+                        };
+                        banner.classList.remove('visible');
+                        return { data, source: 'ipinfo.io' };
+                    }
+                    console.warn('[WGUSIP] ipinfo.io returned error:', raw?.error);
+                } catch (e) {
+                    console.warn('[WGUSIP] ipinfo.io fetch failed:', e.message);
+                }
+
+                statusEl.textContent = 'All providers failed. Check console for details.';
             }
 
             throw new Error('All providers failed or rate limited.');
@@ -1926,6 +2051,45 @@
         
         // Set copyright year
         document.getElementById('year').textContent = new Date().getFullYear();
+
+        // ── PWA: Service Worker registration ────────────────────────────────
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .catch(err => console.warn('SW registration failed:', err));
+            });
+        }
+
+        // ── PWA: Offline/Online banner ───────────────────────────────────────
+        (function () {
+            const banner = document.createElement('div');
+            banner.id = 'offline-banner';
+            banner.textContent = '> OFFLINE MODE — network unavailable, some features disabled';
+            Object.assign(banner.style, {
+                display: 'none',
+                position: 'fixed',
+                bottom: '0',
+                left: '0',
+                right: '0',
+                padding: '10px 16px',
+                background: '#1a0000',
+                color: '#ff4444',
+                fontFamily: 'Courier New, monospace',
+                fontSize: '0.75rem',
+                textAlign: 'center',
+                zIndex: '9999',
+                borderTop: '1px solid #ff4444',
+            });
+            document.body.appendChild(banner);
+
+            function updateOnlineStatus() {
+                banner.style.display = navigator.onLine ? 'none' : 'block';
+            }
+
+            window.addEventListener('online', updateOnlineStatus);
+            window.addEventListener('offline', updateOnlineStatus);
+            updateOnlineStatus();
+        })();
     </script>
 </body>
 </html>
