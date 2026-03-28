@@ -1,0 +1,7 @@
+# Screenshots are generated — only keep the .gitkeep unless you want to commit them
+# screenshots/*.png
+
+# Python
+__pycache__/
+*.pyc
+.venv/
