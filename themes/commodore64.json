@@ -5,19 +5,19 @@
   "author": "We Got Us Some Industries",
   "base": "terminal",
   "variables": {
-    "accent":      "#8080f8",
-    "accent-rgb":  "128, 128, 248",
-    "accent-dim":  "#6060d0",
+    "accent":      "#c0c0ff",
+    "accent-rgb":  "192, 192, 255",
+    "accent-dim":  "#a0a0e8",
     "page-bg":     "#3535ce",
     "surface":     "#4040e0",
     "inner-bg":    "#2828b8",
     "danger":      "#ff5555",
     "text":        "#c0c0ff",
-    "muted":       "rgba(192,192,255,0.6)",
-    "border":      "#8080f8",
+    "muted":       "rgba(192,192,255,0.55)",
+    "border":      "rgba(192,192,255,0.35)",
     "font-body":   "'Courier New', monospace",
     "font-head":   "'Courier New', monospace",
-    "scanlines":   "repeating-linear-gradient(0deg, rgba(128,128,248,0.04) 0px, transparent 1px, transparent 2px, rgba(128,128,248,0.04) 3px)",
+    "scanlines":   "repeating-linear-gradient(0deg, rgba(192,192,255,0.04) 0px, transparent 1px, transparent 2px, rgba(192,192,255,0.04) 3px)",
     "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.3) 100%)"
   }
 }
