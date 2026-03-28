@@ -4,7 +4,7 @@
     { "id": "catppuccin-mocha", "file": "catppuccin-mocha.json" },
     { "id": "commodore64",      "file": "commodore64.json"      },
     { "id": "crt-amber",        "file": "amber.json"            },
-    { "id": "crt-cga",          "file": "crt-cga.json"          },
+    { "id": "crt-cyan",          "file": "crt-cyan.json"         },
     { "id": "crt-green",        "file": "terminal.json"         },
     { "id": "crt-white",        "file": "white.json"            },
     { "id": "dracula",          "file": "dracula.json"          },

@@ -1,7 +1,7 @@
 {
-  "name": "CRT-CGA",
-  "id": "crt-cga",
-  "description": "CRT-CGA — IBM CGA cyan on black, classic PC era palette",
+  "name": "CRT-Cyan",
+  "id": "crt-cyan",
+  "description": "CRT-Cyan — IBM CGA cyan on black, classic PC era palette",
   "author": "We Got Us Some Industries",
   "base": "terminal",
   "variables": {
