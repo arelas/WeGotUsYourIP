@@ -5,6 +5,7 @@
     { "id": "commodore64",      "file": "commodore64.json"      },
     { "id": "crt-amber",        "file": "amber.json"            },
     { "id": "crt-cyan",          "file": "crt-cyan.json"         },
+    { "id": "crt-magenta",      "file": "crt-magenta.json"      },
     { "id": "crt-green",        "file": "terminal.json"         },
     { "id": "crt-white",        "file": "white.json"            },
     { "id": "dracula",          "file": "dracula.json"          },

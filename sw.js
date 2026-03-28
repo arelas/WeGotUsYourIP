@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wegotusyourip-v4';
+const CACHE_NAME = 'wegotusyourip-v5';
 
 const APP_SHELL = [
     './',
@@ -20,6 +20,7 @@ const APP_SHELL = [
     './themes/white.json',
     './themes/terminal.json',
     './themes/crt-cyan.json',
+    './themes/crt-magenta.json',
     './themes/commodore64.json',
     './themes/catppuccin-mocha.json',
     './themes/catppuccin-latte.json',

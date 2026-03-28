@@ -1,0 +1,23 @@
+{
+  "name": "CRT-Magenta",
+  "id": "crt-magenta",
+  "description": "CRT-Magenta — IBM CGA magenta on black, classic PC era palette",
+  "author": "We Got Us Some Industries",
+  "base": "terminal",
+  "variables": {
+    "accent":      "#ff55ff",
+    "accent-rgb":  "255, 85, 255",
+    "accent-dim":  "#aa00aa",
+    "page-bg":     "#000000",
+    "surface":     "#0a0a0a",
+    "inner-bg":    "#000000",
+    "danger":      "#ff5555",
+    "text":        "#ff55ff",
+    "muted":       "rgba(255,85,255,0.5)",
+    "border":      "#ff55ff",
+    "font-body":   "'Courier New', monospace",
+    "font-head":   "'Courier New', monospace",
+    "scanlines":   "repeating-linear-gradient(0deg, rgba(255,85,255,0.03) 0px, transparent 1px, transparent 2px, rgba(255,85,255,0.03) 3px)",
+    "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4) 100%)"
+  }
+}
