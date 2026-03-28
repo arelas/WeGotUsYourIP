@@ -1,0 +1,23 @@
+{
+  "name": "Dracula Dark",
+  "id": "dracula-dark",
+  "description": "Dracula Dark — Dracula palette with a pure black container",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#bd93f9",
+    "accent-rgb":  "189, 147, 249",
+    "accent-dim":  "#9d73d9",
+    "page-bg":     "#0d0d0d",
+    "surface":     "#000000",
+    "inner-bg":    "#0a0a0a",
+    "danger":      "#ff5555",
+    "text":        "#f8f8f2",
+    "muted":       "#6272a4",
+    "border":      "#282a36",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

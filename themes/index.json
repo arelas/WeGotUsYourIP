@@ -10,6 +10,7 @@
     { "id": "crt-green",        "file": "terminal.json"         },
     { "id": "crt-white",        "file": "white.json"            },
     { "id": "dracula",          "file": "dracula.json"          },
+    { "id": "dracula-dark",     "file": "dracula-dark.json"     },
     { "id": "github-dark",      "file": "github-dark.json"      },
     { "id": "github-light",     "file": "github-light.json"     },
     { "id": "gruvbox-dark",     "file": "gruvbox-dark.json"     },
