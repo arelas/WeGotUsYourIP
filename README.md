@@ -2,7 +2,7 @@
 
 > A single-page IP analysis tool with a terminal hacker aesthetic and an optional WGUS brand theme. Instantly detects your IP address and provides comprehensive network information including WHOIS data, reverse DNS, VPN detection, real-time DNSBL blacklist checks, geolocation mapping, and browser fingerprinting.
 
-[![Version](https://img.shields.io/badge/version-1.2-green.svg)](https://github.com/arelas/ip_wegotussome_com)
+[![Version](https://img.shields.io/badge/version-2.0-green.svg)](https://github.com/arelas/WeGotUsYourIP)
 [![License](https://img.shields.io/badge/license-CC%20BY--NC--SA%204.0-blue.svg)](LICENSE)
 
 **Live Demo**: [ip.wegotussome.com](https://ip.wegotussome.com)
@@ -11,7 +11,7 @@
 
 ## Overview
 
-**We Got Us Your IP** is a single-page web application that provides comprehensive IP address analysis and network information. It ships with two visual themes: the original dark terminal aesthetic and an optional WGUS brand theme that matches the look and feel of the broader wegotussome.com toolset. All features run entirely client-side with no build process required.
+**We Got Us Your IP** is a single-page web application that provides comprehensive IP address analysis and network information. It ships with a library of 21 community themes — from the default hacker terminal green to WGUS brand themes, retro CRT palettes, Commodore 64, and popular developer themes like Dracula, Nord, and Catppuccin. Themes are defined as plain JSON files and can be added or customized without touching the application code. All features run entirely client-side with no build process required.
 
 ### Key Features
 
@@ -26,7 +26,7 @@
 - **Export Data** — Download all collected data as JSON
 - **Quick Tools** — Direct links to speed tests, DNS checks, and more
 - **API Rate Limit Handling** — Automatic fallback chain across three providers with live countdown
-- **Dual Theme** — Toggle between Terminal and WGUS brand themes, persisted via localStorage
+- **Theme Library** — 21 themes via JSON theme files; add your own without touching app code
 - **PWA / Offline Support** — Installable as a web app; app shell cached via service worker for offline use
 
 ## Features in Detail
@@ -102,28 +102,37 @@ All provider responses are normalised to the same internal shape — WHOIS, map,
 - Includes IP data, browser fingerprint, and timestamp
 - Filename format: `ip-report-{IP}-{timestamp}.json`
 
-### Theme Toggle
-Switch between two visual themes. Your preference is saved to `localStorage` and restored on next visit.
+### Theme System
 
-- **Terminal** (default) — Dark hacker aesthetic: terminal green (#00ff66) on pure black, CRT scanlines, phosphor glow, Courier New. Toggle button is a fixed pill in the top-right corner.
-- **WGUS** — Brand-consistent theme matching wegotussome.com and qrcodes.wegotussome.com: JetBrains Mono throughout, yellow-green accent (#e8ff47), warm dark surfaces, SVG noise texture. Includes a full breadcrumb navigation header (`wegotussome / ip`) with the toggle button integrated on the right side of the header — no floating button overlapping the UI.
+Themes are selected via a hamburger menu (top-right corner). Your preference is saved to `localStorage` and restored on next visit.
 
-## Design Philosophy
+Themes are defined as plain JSON files in the `themes/` directory and loaded dynamically at runtime. Adding a new theme requires only a JSON file — no code changes needed.
 
-### Terminal Theme
-- Terminal green (#00ff66) on pure black
-- CRT scanline overlay and radial vignette
-- Phosphor text glow on borders and values
-- Courier New monospace throughout
-- Command-line style labels (`[ISP]`, `[LOCATION]`, etc.)
+#### Included Themes (21)
 
-### WGUS Theme
-Matches the **We Got Us Some Industries** brand system, built from the actual QR tool source:
-- JetBrains Mono throughout
-- Yellow-green accent (#e8ff47), text #f0f0f0, muted #666, border #222
-- SVG fractalNoise texture overlay
-- 4px border-radius throughout
-- Breadcrumb nav header with animated pulse dot and `self-hosted` badge
+| Theme | Style |
+|---|---|
+| **WGUS Dark** | Default brand dark — yellow-green accent, warm dark surfaces |
+| **WGUS Light** | Brand light — electric indigo accent, off-white surfaces |
+| **Catppuccin Latte** | Warm creamy light, mauve accent |
+| **Catppuccin Mocha** | Soothing pastel dark, mauve accent |
+| **Commodore 64** | Light-blue on deep royal blue, Courier New |
+| **CRT-Amber** | Phosphor amber on black |
+| **CRT-CGA** | Full IBM CGA palette — cyan accents, magenta borders |
+| **CRT-Cyan** | IBM CGA cyan on black |
+| **CRT-Green** | Classic terminal green on black |
+| **CRT-Magenta** | IBM CGA magenta on black |
+| **CRT-White** | Monochrome white phosphor |
+| **Dracula** | Purple/pink on dark grey, the classic dark theme |
+| **GitHub Dark** | Familiar dark interface from github.com |
+| **GitHub Light** | Clean white interface from github.com |
+| **Gruvbox Dark** | Warm retro ochre and earth tones |
+| **Monokai** | Neon greens and pinks on near-black |
+| **Nord** | Arctic cool blues and grey-greens |
+| **One Dark** | Atom's signature muted blue-grey dark |
+| **Solarized Dark** | Precision-designed dark with warm tones |
+| **Solarized Light** | Warm cream background light palette |
+| **Tokyo Night** | Neon purple-blue midnight city aesthetic |
 
 ## Technology Stack
 
@@ -141,8 +150,9 @@ Matches the **We Got Us Some Industries** brand system, built from the actual QR
 ### Libraries
 - **Leaflet.js 1.9.4** (cdnjs) — Interactive map
 
-### Fonts (WGUS theme)
-- **JetBrains Mono** (Google Fonts) — All text
+### Fonts
+- **JetBrains Mono** (Google Fonts) — WGUS and developer themes
+- **Courier New** — CRT and retro themes (system font, no external load)
 
 ### Browser APIs
 - Clipboard API (copy functionality)
@@ -154,20 +164,20 @@ Matches the **We Got Us Some Industries** brand system, built from the actual QR
 
 ### Quick Deploy (Recommended)
 
-Upload all four files to your web server — no build process, no dependencies.
+Upload the project files to your web server — no build process, no dependencies.
 
 ```bash
-scp index.html manifest.json sw.js icon.svg user@yourserver.com:/var/www/ip.wegotussome.com/
+# Copy all files including the themes directory
+scp -r index.html manifest.json sw.js icon.svg themes/ user@yourserver.com:/var/www/ip.wegotussome.com/
 ```
 
 ### Local Development
 
 ```bash
-git clone https://github.com/wegotussome/ip.git
-cd ip
-open index.html
+git clone https://github.com/arelas/WeGotUsYourIP
+cd WeGotUsYourIP
 
-# Or use a local server (recommended for Clipboard API)
+# Or use a local server (recommended for Clipboard API and service worker)
 python -m http.server 8000
 # Visit http://localhost:8000
 ```
@@ -198,12 +208,9 @@ python -m http.server 8000
 2. Click `> WHOIS LOOKUP` (or press Enter)
 3. View detailed WHOIS information for that IP
 
-### Theme Toggle
+### Switching Themes
 
-- **Terminal mode**: click `⬡ TERMINAL` in the top-right corner
-- **WGUS mode**: click `⬡ TERMINAL` in the right side of the navigation header
-
-The choice is saved automatically and restored on next visit.
+Click the hamburger icon (≡) in the top-right corner to open the theme picker. Your selection is saved automatically and restored on next visit.
 
 ### Quick Tools
 
@@ -227,34 +234,52 @@ const primary = await fetch('https://ipapi.co/json/?key=YOUR_KEY_HERE');
 const response = await fetch(`https://ipapi.co/${ip}/json/?key=YOUR_KEY_HERE`);
 ```
 
-### Customization
+### Adding a Custom Theme
 
-#### Terminal Theme Colors
-Edit the `:root` CSS variables block:
+Create a JSON file in the `themes/` directory:
 
-```css
-:root {
-    --accent:    #00ff66;  /* change to any color */
-    --page-bg:   #0a0a0a;
-    --surface:   #0d0d0d;
-    --inner-bg:  #000000;
-    --danger:    #ff0000;
+```json
+{
+  "name": "My Theme",
+  "id": "my-theme",
+  "description": "A brief description",
+  "author": "Your Name",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#ff6600",
+    "accent-rgb":  "255, 102, 0",
+    "accent-dim":  "#cc5200",
+    "page-bg":     "#1a1a1a",
+    "surface":     "#242424",
+    "inner-bg":    "#111111",
+    "danger":      "#ff4444",
+    "text":        "#f0f0f0",
+    "muted":       "#666666",
+    "border":      "#333333",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
 }
 ```
 
-#### WGUS Theme Colors
-Edit the `body.theme-wgus` CSS variables block:
+Then add an entry to `themes/index.json`:
 
-```css
-body.theme-wgus {
-    --accent:   #e8ff47;
-    --text:     #f0f0f0;
-    --muted:    #666666;
-    --border:   #222222;
-}
+```json
+{ "id": "my-theme", "file": "my-theme.json" }
 ```
 
-#### Funny Messages
+**`base` values:**
+- `"wgus"` — WGUS layout: breadcrumb header, card surfaces, JetBrains Mono styling
+- `"terminal"` — Terminal layout: full-screen CRT aesthetic, scanlines, phosphor glow
+
+**`border` vs `accent`:** In terminal-base themes, `--border` controls structural panel borders while `--accent` controls text, glows, and interactive highlights. Set them to the same value for single-color themes; use distinct values (like CRT-CGA) to create multi-color palettes.
+
+**Light themes:** Any theme with a `page-bg` brightness above `#888` is automatically detected as light and receives subtle structural adjustments (reduced noise opacity, soft container shadow).
+
+### Funny Messages
+
 Edit the `funnyMessages` array near the top of the `<script>` block:
 
 ```javascript
@@ -286,9 +311,9 @@ Fully responsive design optimized for:
 ## Performance
 
 - **Load Time**: < 1 second (excluding API and map tile calls)
-- **File Size**: ~40KB (single HTML file)
 - **External JS**: Leaflet.js via cdnjs (map, loaded at page start)
 - **API Calls on Load**: 1 (ipapi.co); all other calls are user-initiated
+- **Theme Loading**: All theme JSON files fetched in parallel on first load; cached by the service worker
 
 ## Security & Privacy
 
@@ -314,26 +339,29 @@ Fully responsive design optimized for:
 
 ### Common Issues
 
-**Issue**: IP not detecting  
+**Issue**: IP not detecting
 **Solution**: Check internet connection; if rate limited, the countdown banner will appear and retry automatically
 
-**Issue**: Copy button not working  
+**Issue**: Copy button not working
 **Solution**: Ensure you're on HTTPS or localhost (Clipboard API requirement)
 
 **Issue**: WHOIS data not loading
 **Solution**: The app will automatically try ipwho.is then ipinfo.io if ipapi.co is rate-limited; check the browser console for `[WGUSIP]` log entries if all three fail
 
-**Issue**: Map not rendering  
+**Issue**: Map not rendering
 **Solution**: Ensure cdnjs.cloudflare.com is reachable for Leaflet.js; confirm the IP has valid coordinates
 
-**Issue**: Blacklist check shows all ERROR  
+**Issue**: Blacklist check shows all ERROR
 **Solution**: Verify dns.google is accessible from your network
 
-**Issue**: WGUS theme font not loading
+**Issue**: Fonts not loading
 **Solution**: Ensure fonts.googleapis.com is reachable; site falls back to system monospace fonts gracefully
 
-**Issue**: Mobile layout broken  
+**Issue**: Mobile layout broken
 **Solution**: Clear browser cache and hard refresh (Ctrl+Shift+R)
+
+**Issue**: Theme not appearing after adding a custom JSON file
+**Solution**: Confirm the entry is added to `themes/index.json` and the filename matches; check the browser console for fetch errors
 
 ## Roadmap
 
@@ -342,8 +370,12 @@ Fully responsive design optimized for:
 - [x] Wider desktop layout — container expanded to 1000px
 - [x] Multi-provider fallback — ipapi.co → ipwho.is → ipinfo.io for both IP detection and WHOIS
 - [x] WHOIS fallback resilience — isolated per-provider error handling
+- [x] Dark / light mode — WGUS Dark and WGUS Light themes
+- [x] JSON theme file system — community themes loadable without code changes
+- [x] Theme library — 21 themes including CRT, retro, and popular developer palettes
+- [x] Hamburger theme menu — clean dropdown replacing the inline toggle button
 
-### Version 2.0 (Future)
+### Version 3.0 (Future)
 - [ ] Historical data charts
 - [ ] Multi-language support
 - [ ] Bulk IP lookup
@@ -353,7 +385,6 @@ Fully responsive design optimized for:
 - [ ] ASN lookup — dedicated Autonomous System info panel
 - [ ] CIDR / subnet calculator — fits the network tool theme
 - [ ] Clipboard history — remember the last N IPs looked up
-- [ ] Dark / light mode — true light theme variant alongside the existing Terminal and WGUS themes
 
 ## Contributing
 
@@ -364,18 +395,17 @@ Fully responsive design optimized for:
 5. **Open a Pull Request**
 
 ### Development Guidelines
-- Maintain single-file structure
-- Ensure both themes remain fully functional after any changes
+- Ensure all themes remain fully functional after any CSS changes
 - Ensure mobile responsiveness
 - Test on multiple browsers
-- Update VERSION_NOTES.md
+- New themes: add JSON file + entry in `themes/index.json` + entry in `sw.js` APP_SHELL + bump cache version
 
 ## License
 
 This project is licensed under the **Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License** (CC BY-NC-SA 4.0).
 
-**✅ You CAN:** use for personal/educational/non-commercial purposes, modify, share, create derivatives  
-**❌ You CANNOT:** use commercially, sell, monetize, remove attribution  
+**✅ You CAN:** use for personal/educational/non-commercial purposes, modify, share, create derivatives
+**❌ You CANNOT:** use commercially, sell, monetize, remove attribution
 **📋 Requirements:** give credit, link to license, indicate changes, share derivatives under same license
 
 For the full license text, see the [LICENSE](LICENSE) file or visit https://creativecommons.org/licenses/by-nc-sa/4.0/
@@ -394,16 +424,16 @@ For the full license text, see the [LICENSE](LICENSE) file or visit https://crea
 
 ### Libraries
 - [Leaflet.js](https://leafletjs.com) — Interactive maps
-- [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) — Google Fonts (WGUS theme)
+- [JetBrains Mono](https://fonts.google.com/specimen/JetBrains+Mono) — Google Fonts
 
 ### Inspiration
 - Retro terminal aesthetics
 - Hacker culture / command-line interfaces
-- 1980s CRT monitors
+- 1980s CRT monitors and home computers
 
 ## Support
 
-- **Issues**: [GitHub Issues](https://github.com/arelas/ip_wegotussome_com/issues)
+- **Issues**: [GitHub Issues](https://github.com/arelas/WeGotUsYourIP/issues)
 
 ---
 
