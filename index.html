@@ -80,6 +80,48 @@
         }
         body.theme-wgus::after { background: none; }
 
+        /* ── WGUS LIGHT THEME ────────────────────────────────────────
+           Applied as a second class alongside theme-wgus.
+           Only overrides color variables and a few structural tweaks.
+           All structural WGUS rules from body.theme-wgus still apply. */
+        body.theme-wgus-light {
+            --accent:       #6b7c00;
+            --accent-rgb:   107, 124, 0;
+            --accent-dim:   #556200;
+            --page-bg:      #f5f5ef;
+            --surface:      #ffffff;
+            --inner-bg:     #efefea;
+            --danger:       #b83232;
+            --text:         #1a1a1a;
+            --muted:        #888888;
+            --border:       #dcdcd4;
+        }
+
+        /* Soften noise texture on light background */
+        body.theme-wgus-light::before {
+            opacity: 0.15;
+        }
+
+        /* Lighter shadow on container */
+        body.theme-wgus-light .container {
+            box-shadow: 0 4px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        /* IP display box: lighter border */
+        body.theme-wgus-light .ip-display {
+            border-color: var(--border);
+        }
+
+        /* Info items: white surface with subtle border */
+        body.theme-wgus-light .info-item {
+            background: var(--surface);
+        }
+
+        /* Rate limit banner */
+        body.theme-wgus-light #rate-limit-banner {
+            background: #fff5f5;
+        }
+
         /* WGUS nav header */
         body.theme-wgus #wgus-header {
             display: flex !important;
@@ -1189,7 +1231,7 @@
     </style>
 </head>
 <body>
-    <button id="theme-toggle" title="Switch theme" onclick="toggleTheme()">⬡ TERMINAL</button>
+    <button id="theme-toggle" title="Switch theme" onclick="toggleTheme()">● WGUS</button>
 
     <!-- WGUS nav header (hidden in terminal mode) -->
     <header id="wgus-header">
@@ -1199,7 +1241,7 @@
         </a>
         <div style="display:flex;align-items:center;gap:0.75rem;">
             <span class="wgus-badge">self-hosted</span>
-            <button class="wgus-header-toggle" onclick="toggleTheme()">⬡ WGUS</button>
+            <button class="wgus-header-toggle" onclick="toggleTheme()">☀ LIGHT</button>
         </div>
     </header>
     <div class="container">
@@ -1944,23 +1986,30 @@
         // ── Theme toggle ─────────────────────────────────────────────
         const THEME_KEY = 'wgus-ip-theme';
         const btn = document.getElementById('theme-toggle');
+        const THEME_CYCLE = ['wgus', 'wgus-light', 'terminal'];
 
         function applyTheme(theme) {
             const headerBtn = document.querySelector('.wgus-header-toggle');
+            const isWgus = theme === 'wgus' || theme === 'wgus-light';
+
+            // Apply / remove body classes
+            document.body.classList.toggle('theme-wgus', isWgus);
+            document.body.classList.toggle('theme-wgus-light', theme === 'wgus-light');
+
             if (theme === 'wgus') {
-                document.body.classList.add('theme-wgus');
-                btn.innerHTML = '<span style="display:inline-block;width:8px;height:8px;background:var(--accent);border-radius:50%;margin-right:6px;vertical-align:middle;animation:wgus-pulse 2s ease-in-out infinite"></span>WGUS';
+                if (headerBtn) headerBtn.textContent = '☀ LIGHT';
+            } else if (theme === 'wgus-light') {
                 if (headerBtn) headerBtn.textContent = '⬡ TERMINAL';
             } else {
-                document.body.classList.remove('theme-wgus');
-                btn.textContent = '⬡ TERMINAL';
-                if (headerBtn) headerBtn.textContent = '⬡ TERMINAL';
+                // terminal
+                btn.textContent = '● WGUS';
             }
         }
 
         function toggleTheme() {
-            const current = localStorage.getItem(THEME_KEY) || 'terminal';
-            const next = current === 'terminal' ? 'wgus' : 'terminal';
+            const current = localStorage.getItem(THEME_KEY) || 'wgus';
+            const idx = THEME_CYCLE.indexOf(current);
+            const next = THEME_CYCLE[(idx + 1) % THEME_CYCLE.length];
             localStorage.setItem(THEME_KEY, next);
             applyTheme(next);
         }
