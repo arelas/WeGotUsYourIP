@@ -1209,6 +1209,22 @@
         }
         .blacklist-score.all-clean { color: var(--accent); }
         .blacklist-score.some-listed { color: var(--danger); }
+
+        /* ── CIDR CALCULATOR ─────────────────────────────────────── */
+        .cidr-input-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        .cidr-input-row .ip-input { flex: 1; min-width: 200px; }
+        .cidr-input-row .whois-toggle { flex: 0 0 auto; margin-top: 0; }
+        .cidr-binary {
+            font-size: 0.78em;
+            opacity: 0.6;
+            letter-spacing: 0.5px;
+            word-break: break-all;
+        }
     </style>
 </head>
 <body>
@@ -1259,6 +1275,9 @@
             <button class="whois-toggle" id="fingerprint-toggle">
                 > BROWSER INFO
             </button>
+            <button class="whois-toggle" id="cidr-toggle">
+                > CIDR CALC
+            </button>
             <button class="whois-toggle" id="export-btn">
                 > EXPORT DATA
             </button>
@@ -1298,6 +1317,14 @@
             <div id="blacklist-content">
                 <div class="loading">> CHECKING BLACKLISTS...</div>
             </div>
+        </div>
+
+        <div class="whois-section hidden-section" id="cidr-section" style="display: none !important;">
+            <div class="cidr-input-row">
+                <input type="text" id="cidr-input" class="ip-input" placeholder="> Enter CIDR notation (e.g. 192.168.1.0/24)" />
+                <button class="whois-toggle" id="cidr-calc-btn">> CALCULATE</button>
+            </div>
+            <div id="cidr-content"></div>
         </div>
 
         <div class="fingerprint-section hidden-section" id="fingerprint-section" style="display: none !important;">
@@ -1748,6 +1775,100 @@
             }));
         }
 
+        // ── CIDR / Subnet Calculator ──────────────────────────────────
+        function parseCIDR(notation) {
+            const parts = notation.trim().split('/');
+            if (parts.length !== 2) throw new Error('Expected format: x.x.x.x/prefix');
+
+            const ipStr = parts[0];
+            const prefix = parseInt(parts[1], 10);
+            if (isNaN(prefix) || prefix < 0 || prefix > 32) throw new Error('Prefix must be 0–32');
+
+            const octets = ipStr.split('.').map(Number);
+            if (octets.length !== 4 || octets.some(o => isNaN(o) || o < 0 || o > 255))
+                throw new Error('Invalid IP address');
+
+            const ipInt = (octets[0] * 16777216 + octets[1] * 65536 + octets[2] * 256 + octets[3]) >>> 0;
+            const maskInt = prefix === 0 ? 0 : (0xFFFFFFFF << (32 - prefix)) >>> 0;
+            const networkInt = (ipInt & maskInt) >>> 0;
+            const broadcastInt = (networkInt | (~maskInt >>> 0)) >>> 0;
+            const wildcardInt = (~maskInt) >>> 0;
+
+            function intToIP(n) {
+                return [(n >>> 24) & 0xFF, (n >>> 16) & 0xFF, (n >>> 8) & 0xFF, n & 0xFF].join('.');
+            }
+            function intToBin(n) {
+                return (n >>> 0).toString(2).padStart(32, '0').replace(/(.{8})/g, '$1.').slice(0, -1);
+            }
+
+            const totalHosts = Math.pow(2, 32 - prefix);
+            const usableHosts = prefix <= 30 ? totalHosts - 2 : (prefix === 31 ? 2 : 1);
+            const firstUsable = prefix <= 30 ? intToIP((networkInt + 1) >>> 0) : intToIP(networkInt);
+            const lastUsable  = prefix <= 30 ? intToIP((broadcastInt - 1) >>> 0) : intToIP(broadcastInt);
+
+            const o = octets[0];
+            const ipClass = o < 128 ? 'A' : o < 192 ? 'B' : o < 224 ? 'C' : o < 240 ? 'D (Multicast)' : 'E (Reserved)';
+            const isPrivate =
+                (octets[0] === 10) ||
+                (octets[0] === 172 && octets[1] >= 16 && octets[1] <= 31) ||
+                (octets[0] === 192 && octets[1] === 168) ||
+                (octets[0] === 127);
+
+            return {
+                inputIP:     ipStr,
+                network:     intToIP(networkInt),
+                broadcast:   intToIP(broadcastInt),
+                mask:        intToIP(maskInt),
+                wildcard:    intToIP(wildcardInt),
+                firstUsable, lastUsable,
+                totalHosts:  totalHosts.toLocaleString(),
+                usableHosts: usableHosts.toLocaleString(),
+                prefix,
+                ipClass,
+                isPrivate,
+                networkBin:  intToBin(networkInt),
+                maskBin:     intToBin(maskInt),
+            };
+        }
+
+        function displayCIDR() {
+            const input = document.getElementById('cidr-input').value.trim();
+            const content = document.getElementById('cidr-content');
+            if (!input) {
+                content.innerHTML = '<div class="whois-line" style="color:var(--danger);">> ERROR: Enter a CIDR notation (e.g. 192.168.1.0/24)</div>';
+                return;
+            }
+            try {
+                const r = parseCIDR(input);
+                content.innerHTML = `
+                    <div class="whois-line">> CIDR ANALYSIS: ${r.network}/${r.prefix}</div>
+                    <div class="whois-line whois-separator">────────────────────────────────────────</div>
+                    <div class="whois-line"><span class="whois-label">Input IP:</span><span class="whois-value">${r.inputIP}</span></div>
+                    <div class="whois-line"><span class="whois-label">Network Address:</span><span class="whois-value">${r.network}</span></div>
+                    <div class="whois-line"><span class="whois-label">Broadcast Address:</span><span class="whois-value">${r.broadcast}</span></div>
+                    <div class="whois-line"><span class="whois-label">Subnet Mask:</span><span class="whois-value">${r.mask}</span></div>
+                    <div class="whois-line"><span class="whois-label">Wildcard Mask:</span><span class="whois-value">${r.wildcard}</span></div>
+                    <div class="whois-line whois-separator">────────────────────────────────────────</div>
+                    <div class="whois-line"><span class="whois-label">First Usable Host:</span><span class="whois-value">${r.firstUsable}</span></div>
+                    <div class="whois-line"><span class="whois-label">Last Usable Host:</span><span class="whois-value">${r.lastUsable}</span></div>
+                    <div class="whois-line"><span class="whois-label">Total Addresses:</span><span class="whois-value">${r.totalHosts}</span></div>
+                    <div class="whois-line"><span class="whois-label">Usable Hosts:</span><span class="whois-value">${r.usableHosts}</span></div>
+                    <div class="whois-line whois-separator">────────────────────────────────────────</div>
+                    <div class="whois-line"><span class="whois-label">IP Class:</span><span class="whois-value">${r.ipClass}</span></div>
+                    <div class="whois-line"><span class="whois-label">Scope:</span><span class="whois-value">${r.isPrivate ? 'Private (RFC 1918)' : 'Public'}</span></div>
+                    <div class="whois-line whois-separator">────────────────────────────────────────</div>
+                    <div class="whois-line"><span class="whois-label">Network (binary):</span></div>
+                    <div class="whois-line cidr-binary">${r.networkBin}</div>
+                    <div class="whois-line"><span class="whois-label">Mask (binary):</span></div>
+                    <div class="whois-line cidr-binary">${r.maskBin}</div>
+                    <div class="whois-line whois-separator">────────────────────────────────────────</div>
+                    <div class="whois-line">> END OF CIDR DATA</div>
+                `;
+            } catch (err) {
+                content.innerHTML = `<div class="whois-line" style="color:var(--danger);">> ERROR: ${err.message}</div>`;
+            }
+        }
+
         // ── IP Info with rate-limit handling + fallback ───────────────
         async function fetchWithFallback() {
             const banner = document.getElementById('rate-limit-banner');
@@ -2048,6 +2169,10 @@
             map:         { el: 'map-section',          btn: 'map-toggle',         closed: '> VIEW MAP',        open: '> HIDE MAP',          fn: () => initMap() },
             blacklist:   { el: 'blacklist-section',    btn: 'blacklist-toggle',   closed: '> CHECK BLACKLIST', open: '> HIDE BLACKLIST',    fn: () => checkBlacklist(currentIP) },
             fingerprint: { el: 'fingerprint-section',  btn: 'fingerprint-toggle', closed: '> BROWSER INFO',    open: '> HIDE BROWSER INFO', fn: () => displayBrowserFingerprint() },
+            cidr:        { el: 'cidr-section',          btn: 'cidr-toggle',        closed: '> CIDR CALC',       open: '> HIDE CIDR CALC',    fn: () => {
+                document.getElementById('cidr-input').value = currentIP ? `${currentIP}/24` : '';
+                document.getElementById('cidr-content').innerHTML = '';
+            }},
         };
 
         function closeAllSections(except) {
@@ -2084,6 +2209,12 @@
         Object.keys(SECTIONS).forEach(key => {
             document.getElementById(SECTIONS[key].btn)
                 .addEventListener('click', () => toggleSection(key));
+        });
+
+        // CIDR calculator
+        document.getElementById('cidr-calc-btn').addEventListener('click', displayCIDR);
+        document.getElementById('cidr-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') displayCIDR();
         });
 
         // Export button
