@@ -184,6 +184,8 @@
             font-size: 1em;
             color: var(--text);
             text-shadow: none;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         /* VPN badge */
@@ -665,6 +667,8 @@
             font-weight: bold;
             color: var(--accent);
             text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.5);
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
 
         .loading {
@@ -2060,7 +2064,7 @@
                         </div>
                         <div class="info-item">
                             <div class="info-label">[TIMEZONE]</div>
-                            <div class="info-value">${timezone}</div>
+                            <div class="info-value">${timezone.replace(/\//g, '/<wbr>')}</div>
                         </div>
                         <div class="info-item">
                             <div class="info-label">[POSTAL]</div>
