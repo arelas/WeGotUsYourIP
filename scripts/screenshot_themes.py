@@ -23,6 +23,7 @@ import http.server
 # ── Config ────────────────────────────────────────────────────────────────────
 PORT        = 8787
 VIEWPORT    = {"width": 1280, "height": 900}
+DEMO_IP     = "1.1.1.1"   # IP shown in screenshots — change to any public IP
 REPO_ROOT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR     = os.path.join(REPO_ROOT, "screenshots")
 THEMES_FILE = os.path.join(REPO_ROOT, "themes", "index.json")
@@ -62,8 +63,8 @@ def main():
         page = browser.new_page()
         page.set_viewport_size(VIEWPORT)
 
-        print("Loading page and waiting for IP detection...")
-        page.goto(f"http://127.0.0.1:{PORT}/")
+        print(f"Loading page with demo IP {DEMO_IP}...")
+        page.goto(f"http://127.0.0.1:{PORT}/?ip={DEMO_IP}")
 
         try:
             # Wait for the IP address to appear (detection complete)
