@@ -15,6 +15,8 @@ const APP_SHELL = [
     './themes/amber.json',
     './themes/white.json',
     './themes/terminal.json',
+    './themes/crt-cga.json',
+    './themes/commodore64.json',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css',
     'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js',
     'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap',

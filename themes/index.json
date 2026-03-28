@@ -8,6 +8,8 @@
     { "id": "tokyo-night",  "file": "tokyo-night.json"  },
     { "id": "crt-amber",    "file": "amber.json"        },
     { "id": "crt-white",   "file": "white.json"        },
-    { "id": "crt-green",   "file": "terminal.json"     }
+    { "id": "crt-green",   "file": "terminal.json"     },
+    { "id": "crt-cga",     "file": "crt-cga.json"      },
+    { "id": "commodore64", "file": "commodore64.json"  }
   ]
 }

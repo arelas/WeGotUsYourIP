@@ -1,0 +1,23 @@
+{
+  "name": "Commodore 64",
+  "id": "commodore64",
+  "description": "Commodore 64 — light blue on deep blue, iconic 8-bit home computer",
+  "author": "We Got Us Some Industries",
+  "base": "terminal",
+  "variables": {
+    "accent":      "#8080f8",
+    "accent-rgb":  "128, 128, 248",
+    "accent-dim":  "#6060d0",
+    "page-bg":     "#3535ce",
+    "surface":     "#4040e0",
+    "inner-bg":    "#2828b8",
+    "danger":      "#ff5555",
+    "text":        "#8080f8",
+    "muted":       "rgba(128,128,248,0.6)",
+    "border":      "#8080f8",
+    "font-body":   "'Courier New', monospace",
+    "font-head":   "'Courier New', monospace",
+    "scanlines":   "repeating-linear-gradient(0deg, rgba(128,128,248,0.04) 0px, transparent 1px, transparent 2px, rgba(128,128,248,0.04) 3px)",
+    "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.3) 100%)"
+  }
+}
