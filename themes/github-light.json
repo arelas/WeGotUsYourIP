@@ -1,0 +1,23 @@
+{
+  "name": "GitHub Light",
+  "id": "github-light",
+  "description": "GitHub Light — clean white interface from github.com",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#0969da",
+    "accent-rgb":  "9, 105, 218",
+    "accent-dim":  "#0550ae",
+    "page-bg":     "#ffffff",
+    "surface":     "#f6f8fa",
+    "inner-bg":    "#eaeef2",
+    "danger":      "#cf222e",
+    "text":        "#24292f",
+    "muted":       "#8c959f",
+    "border":      "#d0d7de",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

@@ -14,6 +14,10 @@
     { "id": "crt-white",   "file": "white.json"        },
     { "id": "crt-green",   "file": "terminal.json"     },
     { "id": "crt-cga",     "file": "crt-cga.json"      },
-    { "id": "commodore64", "file": "commodore64.json"  }
+    { "id": "commodore64",       "file": "commodore64.json"       },
+    { "id": "catppuccin-mocha", "file": "catppuccin-mocha.json" },
+    { "id": "catppuccin-latte", "file": "catppuccin-latte.json" },
+    { "id": "github-dark",      "file": "github-dark.json"      },
+    { "id": "github-light",     "file": "github-light.json"     }
   ]
 }

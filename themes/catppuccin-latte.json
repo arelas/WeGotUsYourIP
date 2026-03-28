@@ -1,0 +1,23 @@
+{
+  "name": "Catppuccin Latte",
+  "id": "catppuccin-latte",
+  "description": "Catppuccin Latte — warm creamy light theme with mauve accent",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#8839ef",
+    "accent-rgb":  "136, 57, 239",
+    "accent-dim":  "#6e22d0",
+    "page-bg":     "#eff1f5",
+    "surface":     "#e6e9ef",
+    "inner-bg":    "#dce0e8",
+    "danger":      "#d20f39",
+    "text":        "#4c4f69",
+    "muted":       "#9ca0b0",
+    "border":      "#ccd0da",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

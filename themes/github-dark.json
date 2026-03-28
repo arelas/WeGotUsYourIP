@@ -1,0 +1,23 @@
+{
+  "name": "GitHub Dark",
+  "id": "github-dark",
+  "description": "GitHub Dark — the familiar dark interface from github.com",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#58a6ff",
+    "accent-rgb":  "88, 166, 255",
+    "accent-dim":  "#388bfd",
+    "page-bg":     "#0d1117",
+    "surface":     "#161b22",
+    "inner-bg":    "#010409",
+    "danger":      "#f85149",
+    "text":        "#c9d1d9",
+    "muted":       "#484f58",
+    "border":      "#30363d",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}
