@@ -1,0 +1,23 @@
+{
+  "name": "Amber",
+  "id": "amber",
+  "description": "Amber — warm phosphor monitor glow, like a vintage CRT",
+  "author": "We Got Us Some Industries",
+  "base": "terminal",
+  "variables": {
+    "accent":      "#ffb000",
+    "accent-rgb":  "255, 176, 0",
+    "accent-dim":  "#cc8c00",
+    "page-bg":     "#0d0800",
+    "surface":     "#1a1000",
+    "inner-bg":    "#0a0500",
+    "danger":      "#ff4400",
+    "text":        "#ffb000",
+    "muted":       "rgba(255,176,0,0.5)",
+    "border":      "#ffb000",
+    "font-body":   "'Courier New', monospace",
+    "font-head":   "'Courier New', monospace",
+    "scanlines":   "repeating-linear-gradient(0deg, rgba(255,176,0,0.03) 0px, transparent 1px, transparent 2px, rgba(255,176,0,0.03) 3px)",
+    "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4) 100%)"
+  }
+}

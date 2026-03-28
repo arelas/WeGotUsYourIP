@@ -1,8 +1,12 @@
 {
   "themes": [
-    { "id": "wgus-dark",  "file": "wgus-dark.json"  },
-    { "id": "wgus-light", "file": "wgus-light.json" },
-    { "id": "dracula",    "file": "dracula.json"    },
-    { "id": "terminal",   "file": "terminal.json"   }
+    { "id": "wgus-dark",    "file": "wgus-dark.json"    },
+    { "id": "wgus-light",   "file": "wgus-light.json"   },
+    { "id": "dracula",      "file": "dracula.json"      },
+    { "id": "nord",         "file": "nord.json"         },
+    { "id": "gruvbox-dark", "file": "gruvbox-dark.json" },
+    { "id": "tokyo-night",  "file": "tokyo-night.json"  },
+    { "id": "amber",        "file": "amber.json"        },
+    { "id": "terminal",     "file": "terminal.json"     }
   ]
 }

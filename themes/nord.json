@@ -1,0 +1,23 @@
+{
+  "name": "Nord",
+  "id": "nord",
+  "description": "Nord — cool arctic blues and muted greys",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#88c0d0",
+    "accent-rgb":  "136, 192, 208",
+    "accent-dim":  "#6da0b0",
+    "page-bg":     "#2e3440",
+    "surface":     "#3b4252",
+    "inner-bg":    "#292e39",
+    "danger":      "#bf616a",
+    "text":        "#eceff4",
+    "muted":       "#616e88",
+    "border":      "#434c5e",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

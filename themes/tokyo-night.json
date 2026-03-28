@@ -1,0 +1,23 @@
+{
+  "name": "Tokyo Night",
+  "id": "tokyo-night",
+  "description": "Tokyo Night — deep navy with electric blues and purples",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#7aa2f7",
+    "accent-rgb":  "122, 162, 247",
+    "accent-dim":  "#5a82d7",
+    "page-bg":     "#1a1b2e",
+    "surface":     "#24283b",
+    "inner-bg":    "#16161e",
+    "danger":      "#f7768e",
+    "text":        "#c0caf5",
+    "muted":       "#565f89",
+    "border":      "#2f334d",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

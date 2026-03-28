@@ -1,0 +1,23 @@
+{
+  "name": "Gruvbox Dark",
+  "id": "gruvbox-dark",
+  "description": "Gruvbox Dark — warm retro browns with earthy greens and yellows",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#b8bb26",
+    "accent-rgb":  "184, 187, 38",
+    "accent-dim":  "#98971a",
+    "page-bg":     "#282828",
+    "surface":     "#3c3836",
+    "inner-bg":    "#1d2021",
+    "danger":      "#fb4934",
+    "text":        "#ebdbb2",
+    "muted":       "#928374",
+    "border":      "#504945",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}
