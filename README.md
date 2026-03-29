@@ -2,7 +2,7 @@
 
 > A single-page IP analysis tool with a terminal hacker aesthetic and an optional WGUS brand theme. Instantly detects your IP address and provides comprehensive network information including WHOIS data, reverse DNS, VPN detection, real-time DNSBL blacklist checks, geolocation mapping, traceroute visualization, ASN lookup, browser fingerprinting, and lookup history.
 
-[![Version](https://img.shields.io/badge/version-3.0-green.svg)](https://github.com/arelas/WeGotUsYourIP)
+[![Version](https://img.shields.io/badge/version-26.3.29.1452-green.svg)](https://github.com/arelas/WeGotUsYourIP)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **Live Demo**: [ip.wegotussome.com](https://ip.wegotussome.com)
