@@ -22,7 +22,7 @@ import http.server
 
 # ── Config ────────────────────────────────────────────────────────────────────
 PORT        = 8787
-VIEWPORT    = {"width": 1280, "height": 900}
+VIEWPORT    = {"width": 1280, "height": 1600}
 DEMO_IP     = "1.1.1.1"   # IP shown in screenshots — change to any public IP
 REPO_ROOT   = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT_DIR     = os.path.join(REPO_ROOT, "screenshots")
