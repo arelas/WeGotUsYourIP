@@ -74,6 +74,9 @@ def main():
         except PWTimeout:
             print("Warning: IP detection timed out — screenshotting anyway.")
 
+        # ?ip= permalink auto-opens WHOIS — close all panels for clean screenshots
+        page.evaluate("window.closeAllSections && window.closeAllSections(null)")
+
 
         print(f"\nTaking {len(themes)} screenshots...\n")
 
