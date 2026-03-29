@@ -2422,11 +2422,18 @@
         }
 
         async function renderTracerouteMap(hops) {
+            const mapEl = document.getElementById('traceroute-map');
+            if (!mapEl) return;
+
             const publicHops = hops
                 .map((h, i) => ({ ...h, hopNum: i + 1 }))
                 .filter(h => h.resolvedAddress && h.resolvedAddress !== '*' && !isPrivateIP(h.resolvedAddress));
 
-            if (publicHops.length < 2) return;
+            if (publicHops.length < 2) {
+                mapEl.innerHTML = '<div style="padding:15px;opacity:0.5;font-size:0.85em;">> Map unavailable — fewer than 2 public hops in this route</div>';
+                mapEl.style.height = 'auto';
+                return;
+            }
 
             const geoResults = await Promise.all(publicHops.map(async hop => {
                 try {
@@ -2440,10 +2447,11 @@
             }));
 
             const points = geoResults.filter(Boolean);
-            if (points.length < 2) return;
-
-            const mapEl = document.getElementById('traceroute-map');
-            if (!mapEl) return;
+            if (points.length < 2) {
+                mapEl.innerHTML = '<div style="padding:15px;opacity:0.5;font-size:0.85em;">> Map unavailable — could not geolocate enough hops</div>';
+                mapEl.style.height = 'auto';
+                return;
+            }
 
             traceMap = L.map('traceroute-map', { zoomControl: true, scrollWheelZoom: false });
             L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
