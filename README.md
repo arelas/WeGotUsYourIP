@@ -7,7 +7,26 @@
 
 **Live Demo**: [ip.wegotussome.com](https://ip.wegotussome.com)
 
-![Screenshot](https://ip.wegotussome.com/screenshot.png)
+## Theme Gallery
+
+| | | |
+|---|---|---|
+| <img src="screenshots/catppuccin-latte.png" width="400" alt="catppuccin-latte"> | <img src="screenshots/catppuccin-mocha.png" width="400" alt="catppuccin-mocha"> | <img src="screenshots/commodore64.png" width="400" alt="commodore64"> |
+| **Catppuccin Latte** | **Catppuccin Mocha** | **Commodore 64** |
+| <img src="screenshots/crt-amber.png" width="400" alt="crt-amber"> | <img src="screenshots/crt-cga.png" width="400" alt="crt-cga"> | <img src="screenshots/crt-cyan.png" width="400" alt="crt-cyan"> |
+| **CRT-Amber** | **CRT-CGA** | **CRT-Cyan** |
+| <img src="screenshots/crt-magenta.png" width="400" alt="crt-magenta"> | <img src="screenshots/crt-green.png" width="400" alt="crt-green"> | <img src="screenshots/crt-white.png" width="400" alt="crt-white"> |
+| **CRT-Magenta** | **CRT-Green** | **CRT-White** |
+| <img src="screenshots/dracula.png" width="400" alt="dracula"> | <img src="screenshots/dracula-dark.png" width="400" alt="dracula-dark"> | <img src="screenshots/github-dark.png" width="400" alt="github-dark"> |
+| **Dracula** | **Dracula Dark** | **GitHub Dark** |
+| <img src="screenshots/github-light.png" width="400" alt="github-light"> | <img src="screenshots/gruvbox-dark.png" width="400" alt="gruvbox-dark"> | <img src="screenshots/monokai.png" width="400" alt="monokai"> |
+| **GitHub Light** | **Gruvbox Dark** | **Monokai** |
+| <img src="screenshots/nord.png" width="400" alt="nord"> | <img src="screenshots/one-dark.png" width="400" alt="one-dark"> | <img src="screenshots/solarized-dark.png" width="400" alt="solarized-dark"> |
+| **Nord** | **One Dark** | **Solarized Dark** |
+| <img src="screenshots/solarized-light.png" width="400" alt="solarized-light"> | <img src="screenshots/tokyo-night.png" width="400" alt="tokyo-night"> | <img src="screenshots/wgus-dark.png" width="400" alt="wgus-dark"> |
+| **Solarized Light** | **Tokyo Night** | **WGUS Dark** |
+| <img src="screenshots/wgus-light.png" width="400" alt="wgus-light"> | | |
+| **WGUS Light** | | |
 
 ## Overview
 
