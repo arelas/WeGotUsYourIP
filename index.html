@@ -1517,6 +1517,71 @@
         .bulk-vpn  { color: var(--danger) !important; }
         .bulk-clean { color: var(--accent) !important; opacity: 0.7; }
         .bulk-error { opacity: 0.4; }
+
+        /* ── BULK MAP ────────────────────────────────────────────── */
+        #bulk-map {
+            height: 260px;
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        /* ── PING / LATENCY ──────────────────────────────────────── */
+        #ping-section::before { content: '[ PING / LATENCY ]'; }
+
+        .ping-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+        .ping-table th {
+            color: var(--accent);
+            padding: 6px 10px;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.75em;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            text-align: left;
+            font-weight: normal;
+        }
+        .ping-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.12);
+            color: var(--text, var(--accent));
+            vertical-align: middle;
+        }
+        .ping-probe { min-width: 160px; }
+        .ping-stat  { color: var(--accent) !important; text-align: right; white-space: nowrap; min-width: 70px; }
+        .ping-avg   { color: var(--accent) !important; font-weight: bold; text-align: right; white-space: nowrap; min-width: 70px; }
+        .ping-bar-cell { width: 80px; padding-left: 6px !important; }
+        .ping-bar {
+            height: 6px;
+            background: var(--accent);
+            border-radius: 3px;
+            opacity: 0.55;
+            min-width: 2px;
+            transition: width 0.4s;
+        }
+
+        /* ── FIELD COPY BUTTONS ──────────────────────────────────── */
+        .field-copy-btn {
+            background: none;
+            border: 1px solid rgba(var(--accent-rgb), 0.3);
+            color: var(--accent);
+            font-family: var(--font-body);
+            font-size: 0.7em;
+            padding: 1px 6px;
+            border-radius: 3px;
+            cursor: pointer;
+            opacity: 0.35;
+            margin-left: 8px;
+            vertical-align: middle;
+            transition: opacity 0.15s;
+            line-height: 1.5;
+        }
+        .field-copy-btn:hover { opacity: 0.9; }
+        .field-copy-btn.copied { opacity: 1; border-color: var(--accent); }
     </style>
 </head>
 <body>
@@ -1569,6 +1634,9 @@
             </button>
             <button class="whois-toggle" id="cidr-toggle">
                 > CIDR CALC
+            </button>
+            <button class="whois-toggle" id="ping-toggle">
+                > PING
             </button>
             <button class="whois-toggle" id="traceroute-toggle">
                 > TRACEROUTE
@@ -1641,6 +1709,10 @@
             <div id="fingerprint-content"></div>
         </div>
 
+        <div class="whois-section hidden-section" id="ping-section" style="display: none !important;">
+            <div id="ping-content"></div>
+        </div>
+
         <div class="whois-section hidden-section" id="traceroute-section" style="display: none !important;">
             <div id="traceroute-content"></div>
         </div>
@@ -1669,6 +1741,7 @@
                 <button class="whois-toggle" id="bulk-export-btn" style="display:none;">> EXPORT CSV</button>
             </div>
             <div id="bulk-content"></div>
+            <div id="bulk-map" style="display:none;"></div>
         </div>
 
         <div class="whois-section hidden-section" id="history-section" style="display: none !important;">
@@ -1725,6 +1798,24 @@
                 console.error('Copy failed:', err);
             });
         }
+
+        function copyField(btn, text) {
+            navigator.clipboard.writeText(text).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = text; document.body.appendChild(ta); ta.select();
+                document.execCommand('copy'); ta.remove();
+            });
+            btn.textContent = '✓';
+            btn.classList.add('copied');
+            setTimeout(() => { btn.textContent = '⎘'; btn.classList.remove('copied'); }, 1500);
+        }
+
+        // Delegated click handler for all field copy buttons
+        document.addEventListener('click', e => {
+            if (!e.target.matches('.field-copy-btn')) return;
+            const val = e.target.closest('.whois-line')?.querySelector('.whois-value')?.textContent?.trim();
+            if (val) copyField(e.target, val);
+        });
 
         function getBrowserFingerprint() {
             const nav = navigator;
@@ -1822,27 +1913,28 @@
             const whoisContent = document.getElementById('whois-content');
             whoisContent.innerHTML = '<div class="loading">> QUERYING WHOIS DATABASE...</div>';
 
+            const cpBtn = '<button class="field-copy-btn" title="Copy">⎘</button>';
             function renderWhois(data, source) {
                 whoisContent.innerHTML = `
                     <div class="whois-line">> WHOIS QUERY COMPLETE FOR: ${ip}${source !== 'ipapi.co' ? ` <span style="opacity:0.5;font-size:0.85em">(via ${source})</span>` : ''}</div>
                     <div class="whois-line whois-separator">────────────────────────────────────────</div>
-                    <div class="whois-line"><span class="whois-label">IP Address:</span><span class="whois-value">${data.ip || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">Type:</span><span class="whois-value">${data.version || 'IPv4'}</span></div>
-                    <div class="whois-line"><span class="whois-label">Continent:</span><span class="whois-value">${data.continent_code || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">Country:</span><span class="whois-value">${data.country_name || 'N/A'} (${data.country_code || 'N/A'})</span></div>
-                    <div class="whois-line"><span class="whois-label">Region:</span><span class="whois-value">${data.region || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">City:</span><span class="whois-value">${data.city || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">Latitude:</span><span class="whois-value">${data.latitude || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">Longitude:</span><span class="whois-value">${data.longitude || 'N/A'}</span></div>
+                    <div class="whois-line"><span class="whois-label">IP Address:</span><span class="whois-value">${data.ip || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Type:</span><span class="whois-value">${data.version || 'IPv4'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Continent:</span><span class="whois-value">${data.continent_code || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Country:</span><span class="whois-value">${data.country_name || 'N/A'} (${data.country_code || 'N/A'})</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Region:</span><span class="whois-value">${data.region || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">City:</span><span class="whois-value">${data.city || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Latitude:</span><span class="whois-value">${data.latitude || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Longitude:</span><span class="whois-value">${data.longitude || 'N/A'}</span>${cpBtn}</div>
                     <div class="whois-line whois-separator">────────────────────────────────────────</div>
-                    <div class="whois-line"><span class="whois-label">ISP / Org:</span><span class="whois-value">${data.org || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">AS Number:</span><span class="whois-value">${data.asn || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">Postal:</span><span class="whois-value">${data.postal || 'N/A'}</span></div>
+                    <div class="whois-line"><span class="whois-label">ISP / Org:</span><span class="whois-value">${data.org || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">AS Number:</span><span class="whois-value">${data.asn || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Postal:</span><span class="whois-value">${data.postal || 'N/A'}</span>${cpBtn}</div>
                     <div class="whois-line whois-separator">────────────────────────────────────────</div>
-                    <div class="whois-line"><span class="whois-label">Timezone:</span><span class="whois-value">${data.timezone || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">UTC Offset:</span><span class="whois-value">${data.utc_offset || 'N/A'}</span></div>
-                    <div class="whois-line"><span class="whois-label">Currency:</span><span class="whois-value">${data.currency_name || 'N/A'} (${data.currency || 'N/A'})</span></div>
-                    <div class="whois-line"><span class="whois-label">Calling Code:</span><span class="whois-value">+${data.calling_code || 'N/A'}</span></div>
+                    <div class="whois-line"><span class="whois-label">Timezone:</span><span class="whois-value">${data.timezone || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">UTC Offset:</span><span class="whois-value">${data.utc_offset || 'N/A'}</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Currency:</span><span class="whois-value">${data.currency_name || 'N/A'} (${data.currency || 'N/A'})</span>${cpBtn}</div>
+                    <div class="whois-line"><span class="whois-label">Calling Code:</span><span class="whois-value">+${data.calling_code || 'N/A'}</span>${cpBtn}</div>
                     <div class="whois-line whois-separator">────────────────────────────────────────</div>
                     <div class="whois-line">> END OF WHOIS DATA</div>
                 `;
@@ -2619,9 +2711,10 @@
                     ['Remarks',     getAll('remarks').slice(0, 3).join('<br>') || '—'],
                 ].filter(([, v]) => v && v !== '—');
 
+                const cpBtn = '<button class="field-copy-btn" title="Copy">⎘</button>';
                 el.innerHTML = rows.map(([label, value], i) =>
                     `${i > 0 && (label === 'Country' || label === 'Abuse Email') ? '<div class="whois-line whois-separator">────────────────────────────────────────</div>' : ''}
-                    <div class="whois-line"><span class="whois-label">${label}:</span><span class="whois-value">${value}</span></div>`
+                    <div class="whois-line"><span class="whois-label">${label}:</span><span class="whois-value">${value}</span>${cpBtn}</div>`
                 ).join('') + `<div style="margin-top:10px;font-size:0.75em;opacity:0.5;">> Data via RIPE NCC / RIPEstat</div>`;
 
             } catch (e) {
@@ -2722,6 +2815,8 @@
                         country: data.country_name || '—',
                         asn:     data.asn || '—',
                         vpn:     detectVPN(data.org),
+                        lat:     data.latitude  || null,
+                        lon:     data.longitude || null,
                         error:   false,
                     });
                 } catch (_) {
@@ -2753,6 +2848,7 @@
 
             runBtn.disabled = false;
             document.getElementById('bulk-export-btn').style.display = '';
+            renderBulkMap();
         }
 
         function exportBulkCSV() {
@@ -2768,6 +2864,111 @@
             const a    = Object.assign(document.createElement('a'), { href: url, download: `bulk-ip-${Date.now()}.csv` });
             a.click();
             URL.revokeObjectURL(url);
+        }
+
+        // ── Bulk map ─────────────────────────────────────────────────
+        let bulkMap = null;
+
+        function renderBulkMap() {
+            const mapEl = document.getElementById('bulk-map');
+            if (bulkMap) { bulkMap.remove(); bulkMap = null; }
+
+            const points = bulkResults.filter(r => !r.error && r.lat && r.lon);
+            if (points.length < 1) { mapEl.style.display = 'none'; return; }
+
+            mapEl.style.display = 'block';
+            bulkMap = L.map('bulk-map', { zoomControl: true, scrollWheelZoom: false });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+                maxZoom: 18,
+            }).addTo(bulkMap);
+
+            const accent  = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#00ff66';
+            const innerBg = getComputedStyle(document.body).getPropertyValue('--inner-bg').trim() || '#000';
+
+            const latLngs = points.map(p => [p.lat, p.lon]);
+            points.forEach(p => {
+                const icon = L.divIcon({
+                    html: `<div style="width:10px;height:10px;background:${accent};border:2px solid ${innerBg};border-radius:50%;box-shadow:0 0 6px ${accent};"></div>`,
+                    className: '', iconSize: [10, 10], iconAnchor: [5, 5], popupAnchor: [0, -8],
+                });
+                L.marker([p.lat, p.lon], { icon })
+                    .addTo(bulkMap)
+                    .bindPopup(`<b>${p.ip}</b><br>${p.city}, ${p.country}<br>${p.isp}`);
+            });
+
+            bulkMap.fitBounds(L.latLngBounds(latLngs).pad(0.2));
+        }
+
+        // ── Ping / Latency ───────────────────────────────────────────
+        async function runPing(targetIP) {
+            const el = document.getElementById('ping-content');
+            el.innerHTML = '<div class="loading">> PINGING FROM GLOBAL PROBES...</div>';
+
+            try {
+                const resp = await fetch('https://api.globalping.io/v1/measurements', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'ping',
+                        target: targetIP,
+                        locations: [
+                            { magic: 'NA' },
+                            { magic: 'EU' },
+                            { magic: 'AS' },
+                            { magic: 'OC' },
+                            { magic: 'SA' },
+                        ],
+                        limit: 5,
+                        measurementOptions: { packets: 4 },
+                    }),
+                });
+                if (!resp.ok) throw new Error(`GlobalPing API error (${resp.status})`);
+                const { id } = await resp.json();
+
+                el.innerHTML = '<div class="loading">> WAITING FOR PROBE RESULTS...</div>';
+
+                let result = null;
+                for (let i = 0; i < 20; i++) {
+                    await new Promise(r => setTimeout(r, 1000));
+                    const poll = await fetch(`https://api.globalping.io/v1/measurements/${id}`);
+                    const data = await poll.json();
+                    if (data.status === 'finished') { result = data; break; }
+                }
+                if (!result) throw new Error('Ping timed out after 20s');
+
+                const maxAvg = Math.max(...result.results.map(r => r.result.stats?.avg || 0), 1);
+
+                const rows = result.results.map(r => {
+                    const stats = r.result.stats;
+                    const probe = r.probe;
+                    const loss  = stats?.loss != null ? `${stats.loss}%` : '—';
+                    const min   = stats?.min  != null ? `${stats.min.toFixed(1)} ms`  : '—';
+                    const avg   = stats?.avg  != null ? `${stats.avg.toFixed(1)} ms`  : '—';
+                    const max   = stats?.max  != null ? `${stats.max.toFixed(1)} ms`  : '—';
+                    const barW  = stats?.avg  != null ? Math.round((stats.avg / maxAvg) * 100) : 0;
+                    return `<tr>
+                        <td class="ping-probe">${probe.city}, ${probe.country}<br><span style="opacity:0.45;font-size:0.8em;">${probe.network || ''}</span></td>
+                        <td class="ping-stat">${min}</td>
+                        <td class="ping-avg">${avg}</td>
+                        <td class="ping-stat">${max}</td>
+                        <td class="ping-stat">${loss}</td>
+                        <td class="ping-bar-cell"><div class="ping-bar" style="width:${barW}%"></div></td>
+                    </tr>`;
+                }).join('');
+
+                el.innerHTML = `
+                    <table class="ping-table">
+                        <thead><tr>
+                            <th>PROBE LOCATION</th><th>MIN</th><th>AVG</th><th>MAX</th><th>LOSS</th><th></th>
+                        </tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    <div style="margin-top:10px;font-size:0.75em;opacity:0.5;">> Latency measured from GlobalPing probes worldwide, not your browser</div>
+                `;
+            } catch (e) {
+                el.innerHTML = `<div class="error">> ERROR: ${e.message}</div>`;
+            }
         }
 
         // ── Theme system ─────────────────────────────────────────────
@@ -3038,6 +3239,7 @@
                 document.getElementById('cidr-input').value = currentIP ? `${currentIP}/24` : '';
                 document.getElementById('cidr-content').innerHTML = '';
             }},
+            ping:        { el: 'ping-section',        btn: 'ping-toggle',       closed: '> PING',           open: '> HIDE PING',         fn: () => runPing(currentIP) },
             traceroute:  { el: 'traceroute-section', btn: 'traceroute-toggle', closed: '> TRACEROUTE',     open: '> HIDE TRACEROUTE',   fn: () => runTraceroute(currentIP) },
             asn:         { el: 'asn-section',           btn: 'asn-toggle',         closed: '> ASN INFO',        open: '> HIDE ASN INFO',     fn: () => {
                 const asn = currentData?.asn || '';
@@ -3054,6 +3256,8 @@
                 document.getElementById('bulk-input').value = '';
                 document.getElementById('bulk-content').innerHTML = '';
                 document.getElementById('bulk-export-btn').style.display = 'none';
+                document.getElementById('bulk-map').style.display = 'none';
+                if (bulkMap) { bulkMap.remove(); bulkMap = null; }
             }},
             history:     { el: 'history-section',       btn: 'history-toggle',     closed: '> HISTORY',         open: '> HIDE HISTORY',      fn: () => displayHistory() },
         };
