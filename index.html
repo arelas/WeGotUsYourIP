@@ -2141,6 +2141,7 @@
         }
 
         function setTheme(themeId) {
+            if (document.getElementById('theme-menu').style.display === 'none') return;
             localStorage.setItem(THEME_KEY, themeId);
             applyTheme(themeId);
             document.getElementById('theme-dropdown').classList.remove('open');
@@ -2178,7 +2179,23 @@
                     dropdown.appendChild(opt);
                 });
 
-                applyTheme(localStorage.getItem(THEME_KEY) || 'wgus-dark');
+                // Check for optional host config
+                let hostTheme = null;
+                let hostLocked = false;
+                try {
+                    const cfg = await fetch('./config.json');
+                    if (cfg.ok) {
+                        const { theme, locked } = await cfg.json();
+                        if (theme) hostTheme = theme;
+                        if (locked) hostLocked = true;
+                    }
+                } catch (_) { /* no config.json — that's fine */ }
+
+                if (hostLocked) {
+                    document.getElementById('theme-menu').style.display = 'none';
+                }
+
+                applyTheme(hostTheme || localStorage.getItem(THEME_KEY) || 'wgus-dark');
             } catch (e) {
                 console.error('[WGUSIP] Failed to load themes:', e);
             }

@@ -1,9 +1,10 @@
-const CACHE_NAME = 'wegotusyourip-v9';
+const CACHE_NAME = 'wegotusyourip-v10';
 
 const APP_SHELL = [
     './',
     './index.html',
     './manifest.json',
+    './config.json',
     './icon.svg',
     './themes/index.json',
     './themes/wgus-dark.json',
