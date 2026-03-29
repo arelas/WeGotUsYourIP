@@ -32,7 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-    <!-- Preload cached theme variables to prevent flash of default green CRT styles -->
+    <!-- Preload cached theme variables to prevent flash on reload -->
     <script>
         (function () {
             try {
@@ -46,22 +46,22 @@
         })();
     </script>
     <style>
-        /* ── TERMINAL THEME (default) ────────────────────────────── */
+        /* ── WGUS DARK (default) ─────────────────────────────────── */
         :root {
-            --accent:       #00ff66;
-            --accent-rgb:   0, 255, 102;
-            --accent-dim:   #00cc55;
+            --accent:       #e8ff47;
+            --accent-rgb:   232, 255, 71;
+            --accent-dim:   #b8cc30;
             --page-bg:      #0a0a0a;
-            --surface:      #0d0d0d;
-            --inner-bg:     #000000;
-            --danger:       #ff0000;
-            --text:         #00ff66;   /* terminal: text = accent */
-            --muted:        rgba(0,255,102,0.5);
-            --border:       #00ff66;
-            --font-body:    'Courier New', monospace;
-            --font-head:    'Courier New', monospace;
-            --scanlines:    repeating-linear-gradient(0deg, rgba(0,255,102,0.03) 0px, transparent 1px, transparent 2px, rgba(0,255,102,0.03) 3px);
-            --vignette:     radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4) 100%);
+            --surface:      #111111;
+            --inner-bg:     #111111;
+            --danger:       #e05252;
+            --text:         #f0f0f0;
+            --muted:        #666666;
+            --border:       #222222;
+            --font-body:    'JetBrains Mono', monospace;
+            --font-head:    'JetBrains Mono', monospace;
+            --scanlines:    none;
+            --vignette:     none;
         }
 
         /* ── WGUS THEME ──────────────────────────────────────────── */
