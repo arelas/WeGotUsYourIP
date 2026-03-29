@@ -1272,6 +1272,51 @@
             word-break: break-all;
         }
 
+        /* ── TRACEROUTE ──────────────────────────────────────────── */
+        #traceroute-section::before { content: '[ TRACEROUTE ]'; }
+
+        #traceroute-map {
+            height: 280px;
+            width: 100%;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .hop-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+        .hop-table th {
+            color: var(--accent);
+            padding: 6px 10px;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.75em;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            text-align: left;
+            font-weight: normal;
+        }
+        .hop-table td {
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.15);
+            color: var(--text, var(--accent));
+        }
+        .hop-num  { color: var(--accent) !important; opacity: 0.5; width: 30px; }
+        .hop-ip   { color: var(--accent) !important; font-weight: bold; }
+        .hop-host { opacity: 0.6; font-size: 0.85em; word-break: break-all; }
+        .hop-rtt  { color: var(--accent) !important; text-align: right; white-space: nowrap; }
+        .hop-timeout td { opacity: 0.3; }
+        .hop-private {
+            font-size: 0.7em;
+            opacity: 0.5;
+            border: 1px solid var(--border);
+            padding: 1px 5px;
+            border-radius: 3px;
+            margin-left: 5px;
+            vertical-align: middle;
+        }
+
         /* ── ASN LOOKUP ──────────────────────────────────────────── */
         #asn-section::before  { content: '[ ASN INFO ]'; }
 
@@ -1441,6 +1486,9 @@
             <button class="whois-toggle" id="cidr-toggle">
                 > CIDR CALC
             </button>
+            <button class="whois-toggle" id="traceroute-toggle">
+                > TRACEROUTE
+            </button>
             <button class="whois-toggle" id="asn-toggle">
                 > ASN INFO
             </button>
@@ -1504,6 +1552,10 @@
 
         <div class="fingerprint-section hidden-section" id="fingerprint-section" style="display: none !important;">
             <div id="fingerprint-content"></div>
+        </div>
+
+        <div class="whois-section hidden-section" id="traceroute-section" style="display: none !important;">
+            <div id="traceroute-content"></div>
         </div>
 
         <div class="whois-section hidden-section" id="asn-section" style="display: none !important;">
@@ -2289,6 +2341,139 @@
             }
         }
 
+        // ── Traceroute ───────────────────────────────────────────────
+        let traceMap = null;
+
+        function isPrivateIP(ip) {
+            return /^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.|127\.|::1$|fc|fd)/i.test(ip);
+        }
+
+        async function runTraceroute(targetIP) {
+            const el = document.getElementById('traceroute-content');
+            el.innerHTML = '<div class="loading">> INITIATING TRACEROUTE...</div>';
+            if (traceMap) { traceMap.remove(); traceMap = null; }
+
+            try {
+                const location = currentData?.country_code
+                    ? { magic: currentData.country_code }
+                    : { magic: 'world' };
+
+                const resp = await fetch('https://api.globalping.io/v1/measurements', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        type: 'traceroute',
+                        target: targetIP,
+                        locations: [location],
+                        limit: 1,
+                        measurementOptions: { protocol: 'ICMP' },
+                    }),
+                });
+                if (!resp.ok) throw new Error(`GlobalPing API error (${resp.status})`);
+                const { id } = await resp.json();
+
+                el.innerHTML = '<div class="loading">> TRACING ROUTE — this may take up to 30s...</div>';
+
+                let result = null;
+                for (let i = 0; i < 30; i++) {
+                    await new Promise(r => setTimeout(r, 1000));
+                    const poll = await fetch(`https://api.globalping.io/v1/measurements/${id}`);
+                    const data = await poll.json();
+                    if (data.status === 'finished') { result = data; break; }
+                }
+                if (!result) throw new Error('Traceroute timed out after 30s');
+
+                const probe = result.results[0].probe;
+                const hops  = result.results[0].result.hops || [];
+                if (!hops.length) throw new Error('No hops returned');
+
+                const rows = hops.map((hop, i) => {
+                    const ip   = hop.resolvedAddress || '*';
+                    const host = (hop.resolvedHostname && hop.resolvedHostname !== ip) ? hop.resolvedHostname : '';
+                    const avg  = hop.stats?.avg != null ? `${hop.stats.avg.toFixed(1)} ms` : '*';
+                    const priv = ip !== '*' && isPrivateIP(ip);
+                    return `<tr class="${ip === '*' ? 'hop-timeout' : ''}">
+                        <td class="hop-num">${i + 1}</td>
+                        <td class="hop-ip">${ip}${priv ? '<span class="hop-private">private</span>' : ''}</td>
+                        <td class="hop-host">${host}</td>
+                        <td class="hop-rtt">${avg}</td>
+                    </tr>`;
+                }).join('');
+
+                el.innerHTML = `
+                    <div class="whois-line" style="margin-bottom:12px;font-size:0.85em;opacity:0.7;">
+                        > Probe: ${probe.city}, ${probe.country} — ${probe.network}
+                    </div>
+                    <div id="traceroute-map"></div>
+                    <table class="hop-table">
+                        <thead><tr>
+                            <th>#</th><th>IP ADDRESS</th><th>HOSTNAME</th><th>AVG RTT</th>
+                        </tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    <div style="margin-top:10px;font-size:0.75em;opacity:0.5;">> Route measured from GlobalPing probe, not your browser</div>
+                `;
+
+                await renderTracerouteMap(hops);
+
+            } catch (e) {
+                el.innerHTML = `<div class="error">> ERROR: ${e.message}</div>`;
+            }
+        }
+
+        async function renderTracerouteMap(hops) {
+            const publicHops = hops
+                .map((h, i) => ({ ...h, hopNum: i + 1 }))
+                .filter(h => h.resolvedAddress && h.resolvedAddress !== '*' && !isPrivateIP(h.resolvedAddress));
+
+            if (publicHops.length < 2) return;
+
+            const geoResults = await Promise.all(publicHops.map(async hop => {
+                try {
+                    const r = await fetch(`https://ipwho.is/${hop.resolvedAddress}`);
+                    const d = await r.json();
+                    if (d.success !== false && d.latitude && d.longitude) {
+                        return { ...hop, lat: d.latitude, lon: d.longitude, city: d.city, country: d.country_code };
+                    }
+                } catch (_) {}
+                return null;
+            }));
+
+            const points = geoResults.filter(Boolean);
+            if (points.length < 2) return;
+
+            const mapEl = document.getElementById('traceroute-map');
+            if (!mapEl) return;
+
+            traceMap = L.map('traceroute-map', { zoomControl: true, scrollWheelZoom: false });
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© <a href="https://openstreetmap.org">OpenStreetMap</a>',
+                maxZoom: 18,
+            }).addTo(traceMap);
+
+            const accent  = getComputedStyle(document.body).getPropertyValue('--accent').trim() || '#00ff66';
+            const innerBg = getComputedStyle(document.body).getPropertyValue('--inner-bg').trim() || '#000';
+            const latLngs = points.map(p => [p.lat, p.lon]);
+
+            L.polyline(latLngs, { color: accent, weight: 2, opacity: 0.7, dashArray: '5 5' }).addTo(traceMap);
+
+            points.forEach((p, i) => {
+                const isLast = i === points.length - 1;
+                const size   = isLast ? 14 : 10;
+                const icon   = L.divIcon({
+                    html: `<div style="width:${size}px;height:${size}px;background:${accent};border:2px solid ${innerBg};border-radius:50%;opacity:${0.45 + (i / points.length) * 0.55};box-shadow:0 0 6px ${accent};"></div>`,
+                    className: '', iconSize: [size, size], iconAnchor: [size/2, size/2], popupAnchor: [0, -8],
+                });
+                const avg = p.stats?.avg != null ? `${p.stats.avg.toFixed(1)} ms` : '*';
+                L.marker([p.lat, p.lon], { icon })
+                    .addTo(traceMap)
+                    .bindPopup(`<b>Hop ${p.hopNum}</b><br>${p.resolvedAddress}<br>${p.city || ''}, ${p.country || ''}<br>Avg: ${avg}`);
+            });
+
+            traceMap.fitBounds(latLngs, { padding: [30, 30] });
+            setTimeout(() => traceMap.invalidateSize(), 100);
+        }
+
         // ── ASN Lookup ───────────────────────────────────────────────
         async function getASNInfo(rawAsn) {
             const asnNum = String(rawAsn).replace(/^AS/i, '').trim();
@@ -2618,6 +2803,7 @@
                 document.getElementById('cidr-input').value = currentIP ? `${currentIP}/24` : '';
                 document.getElementById('cidr-content').innerHTML = '';
             }},
+            traceroute:  { el: 'traceroute-section', btn: 'traceroute-toggle', closed: '> TRACEROUTE',     open: '> HIDE TRACEROUTE',   fn: () => runTraceroute(currentIP) },
             asn:         { el: 'asn-section',           btn: 'asn-toggle',         closed: '> ASN INFO',        open: '> HIDE ASN INFO',     fn: () => {
                 const asn = currentData?.asn || '';
                 document.getElementById('asn-input').value = asn;

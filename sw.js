@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wegotusyourip-v20';
+const CACHE_NAME = 'wegotusyourip-v21';
 
 const APP_SHELL = [
     './',
@@ -39,7 +39,7 @@ const APP_SHELL = [
 ];
 
 // API hostnames that should always be network-first (no offline cache)
-const API_HOSTS = ['ipapi.co', 'ipwho.is', 'ipinfo.io', 'dns.google', 'stat.ripe.net'];
+const API_HOSTS = ['ipapi.co', 'ipwho.is', 'ipinfo.io', 'dns.google', 'stat.ripe.net', 'api.globalping.io'];
 
 // Tile/CDN hosts to cache aggressively (map tiles, fonts)
 const CACHE_HOSTS = [
