@@ -5,6 +5,7 @@
   "author": "We Got Us Some Industries",
   "base": "wgus",
   "logo": "./themes/fusion-logo.svg",
+  "logo_href": "https://fusionmanagedit.com/",
   "title": "FMIT IP Tool",
   "variables": {
     "accent":      "#d56134",

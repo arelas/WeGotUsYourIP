@@ -21,6 +21,7 @@
     { "id": "solarized-dark",   "file": "solarized-dark.json"   },
     { "id": "solarized-light",  "file": "solarized-light.json"  },
     { "id": "tokyo-night",      "file": "tokyo-night.json"      },
+    { "id": "vortex",           "file": "vortex.json"           },
     { "id": "wgus-dark",        "file": "wgus-dark.json"        },
     { "id": "wgus-light",       "file": "wgus-light.json"       }
   ]

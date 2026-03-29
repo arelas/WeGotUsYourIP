@@ -32,6 +32,19 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+    <!-- Preload cached theme variables to prevent flash of default green CRT styles -->
+    <script>
+        (function () {
+            try {
+                var c = JSON.parse(localStorage.getItem('wgusip-theme-cache'));
+                if (!c || !c.vars) return;
+                var s = document.documentElement.style;
+                Object.keys(c.vars).forEach(function (k) { s.setProperty('--' + k, c.vars[k]); });
+                if (c.wgus)  document.documentElement.dataset.preloadWgus = '1';
+                if (c.light) document.documentElement.dataset.preloadLight = '1';
+            } catch (_) {}
+        })();
+    </script>
     <style>
         /* ── TERMINAL THEME (default) ────────────────────────────── */
         :root {
@@ -93,6 +106,11 @@
         /* WGUS nav header */
         body.theme-wgus #wgus-header {
             display: flex !important;
+        }
+
+        /* Align hamburger with the inner container right edge */
+        body.theme-wgus #theme-menu {
+            right: max(1rem, calc((100vw - 1000px) / 2));
         }
 
         /* Typography */
@@ -402,7 +420,7 @@
             z-index: 3;
             width: 100%;
             border-bottom: 1px solid var(--border);
-            padding: 1.1rem 2rem;
+            padding: 1.1rem max(2rem, calc((100% - 1000px) / 2));
             align-items: center;
             justify-content: space-between;
             background: var(--page-bg);
@@ -1253,6 +1271,123 @@
             letter-spacing: 0.5px;
             word-break: break-all;
         }
+
+        /* ── ASN LOOKUP ──────────────────────────────────────────── */
+        #asn-section::before  { content: '[ ASN INFO ]'; }
+
+        /* ── IP COMPARISON ───────────────────────────────────────── */
+        #compare-section::before { content: '[ IP COMPARISON ]'; }
+
+        .compare-inputs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .compare-inputs .ip-input { flex: 1; min-width: 160px; }
+        .compare-inputs .whois-toggle { flex: 0 0 auto; margin-top: 0; }
+
+        .compare-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+            text-align: left;
+        }
+        .compare-table th {
+            color: var(--accent);
+            padding: 8px 10px;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.8em;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            font-weight: normal;
+        }
+        .compare-table td {
+            padding: 8px 10px;
+            border-bottom: 1px solid var(--border);
+            color: var(--text, var(--accent));
+            vertical-align: top;
+            word-break: break-word;
+        }
+        .compare-table .field-col {
+            color: var(--accent);
+            opacity: 0.6;
+            font-size: 0.85em;
+            white-space: nowrap;
+            min-width: 90px;
+        }
+        .compare-diff td:not(.field-col) {
+            background: rgba(var(--accent-rgb), 0.07);
+        }
+        .compare-match td:not(.field-col) {
+            opacity: 0.6;
+        }
+
+        /* ── BULK IP LOOKUP ──────────────────────────────────────── */
+        #bulk-section::before { content: '[ BULK IP LOOKUP ]'; }
+
+        .bulk-textarea {
+            width: 100%;
+            min-height: 110px;
+            background: var(--inner-bg);
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-family: var(--font-body);
+            font-size: 0.9em;
+            padding: 12px;
+            border-radius: 5px;
+            resize: vertical;
+            box-sizing: border-box;
+            margin-bottom: 10px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .bulk-textarea::placeholder { opacity: 0.4; }
+        .bulk-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px rgba(var(--accent-rgb), 0.3);
+        }
+        .bulk-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        .bulk-controls .whois-toggle { margin-top: 0; }
+        .bulk-progress {
+            margin: 10px 0;
+            color: var(--accent);
+            opacity: 0.7;
+            font-size: 0.9em;
+            font-family: var(--font-body);
+        }
+        .bulk-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+        }
+        .bulk-table th {
+            color: var(--accent);
+            padding: 7px 10px;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.75em;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            text-align: left;
+            font-weight: normal;
+        }
+        .bulk-table td {
+            padding: 7px 10px;
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.15);
+            color: var(--text, var(--accent));
+            word-break: break-word;
+        }
+        .bulk-table tr:hover td { background: rgba(var(--accent-rgb), 0.05); }
+        .bulk-table .bulk-ip { color: var(--accent); font-weight: bold; }
+        .bulk-vpn  { color: var(--danger) !important; }
+        .bulk-clean { color: var(--accent) !important; opacity: 0.7; }
+        .bulk-error { opacity: 0.4; }
     </style>
 </head>
 <body>
@@ -1305,6 +1440,15 @@
             </button>
             <button class="whois-toggle" id="cidr-toggle">
                 > CIDR CALC
+            </button>
+            <button class="whois-toggle" id="asn-toggle">
+                > ASN INFO
+            </button>
+            <button class="whois-toggle" id="compare-toggle">
+                > COMPARE IPs
+            </button>
+            <button class="whois-toggle" id="bulk-toggle">
+                > BULK LOOKUP
             </button>
             <button class="whois-toggle" id="share-btn">
                 > SHARE / PERMALINK
@@ -1360,6 +1504,32 @@
 
         <div class="fingerprint-section hidden-section" id="fingerprint-section" style="display: none !important;">
             <div id="fingerprint-content"></div>
+        </div>
+
+        <div class="whois-section hidden-section" id="asn-section" style="display: none !important;">
+            <div class="cidr-input-row">
+                <input type="text" id="asn-input" class="ip-input" placeholder="> Enter ASN (e.g. AS15169 or 15169)" />
+                <button class="whois-toggle" id="asn-lookup-btn">> LOOKUP</button>
+            </div>
+            <div id="asn-content"></div>
+        </div>
+
+        <div class="whois-section hidden-section" id="compare-section" style="display: none !important;">
+            <div class="compare-inputs">
+                <input type="text" id="compare-ip1" class="ip-input" placeholder="> IP Address 1" />
+                <input type="text" id="compare-ip2" class="ip-input" placeholder="> IP Address 2" />
+                <button class="whois-toggle" id="compare-btn">> COMPARE</button>
+            </div>
+            <div id="compare-content"></div>
+        </div>
+
+        <div class="whois-section hidden-section" id="bulk-section" style="display: none !important;">
+            <textarea id="bulk-input" class="bulk-textarea" placeholder="> Enter IP addresses, one per line (max 20)&#10;> e.g.&#10;  8.8.8.8&#10;  1.1.1.1&#10;  9.9.9.9"></textarea>
+            <div class="bulk-controls">
+                <button class="whois-toggle" id="bulk-run-btn">> RUN LOOKUP</button>
+                <button class="whois-toggle" id="bulk-export-btn" style="display:none;">> EXPORT CSV</button>
+            </div>
+            <div id="bulk-content"></div>
         </div>
 
         <div class="funny-message" id="funny-message" style="display: none;"></div>
@@ -2119,6 +2289,200 @@
             }
         }
 
+        // ── ASN Lookup ───────────────────────────────────────────────
+        async function getASNInfo(rawAsn) {
+            const asnNum = String(rawAsn).replace(/^AS/i, '').trim();
+            const el = document.getElementById('asn-content');
+            if (!asnNum || !/^\d+$/.test(asnNum)) {
+                el.innerHTML = '<div class="error">> ERROR: Enter a valid ASN number (e.g. AS15169 or 15169)</div>';
+                return;
+            }
+            el.innerHTML = '<div class="loading">> QUERYING BGP DATABASE...</div>';
+            try {
+                const r = await fetch(`https://stat.ripe.net/data/whois/data.json?resource=AS${asnNum}`);
+                if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                const json = await r.json();
+                if (json.status !== 'ok') throw new Error('ASN not found');
+
+                // Flatten all record key-value pairs from all record blocks
+                const pairs = (json.data?.records ?? []).flat();
+                const irr   = (json.data?.irr_records ?? []).flat();
+                const all   = [...pairs, ...irr];
+                const get   = (...keys) => {
+                    for (const k of keys) {
+                        const v = all.find(p => p.key.toLowerCase() === k.toLowerCase())?.value;
+                        if (v) return v;
+                    }
+                    return '—';
+                };
+                const getAll = (key) => all.filter(p => p.key.toLowerCase() === key.toLowerCase()).map(p => p.value);
+
+                const name    = get('as-name', 'ASName', 'name');
+                const descr   = getAll('descr').join(' ') || get('OrgName', 'org-name');
+                const country = get('country', 'Country');
+                const descrLines = getAll('descr');
+
+                const rows = [
+                    ['ASN',         `AS${asnNum}`],
+                    ['Name',        name],
+                    ['Description', descrLines.length ? descrLines.join('<br>') : get('OrgName', 'org-name')],
+                    ['Country',     country],
+                    ['Org',         get('org', 'OrgId')],
+                    ['Abuse Email', get('abuse-mailbox', 'OrgAbuseEmail')],
+                    ['Remarks',     getAll('remarks').slice(0, 3).join('<br>') || '—'],
+                ].filter(([, v]) => v && v !== '—');
+
+                el.innerHTML = rows.map(([label, value], i) =>
+                    `${i > 0 && (label === 'Country' || label === 'Abuse Email') ? '<div class="whois-line whois-separator">────────────────────────────────────────</div>' : ''}
+                    <div class="whois-line"><span class="whois-label">${label}:</span><span class="whois-value">${value}</span></div>`
+                ).join('') + `<div style="margin-top:10px;font-size:0.75em;opacity:0.5;">> Data via RIPE NCC / RIPEstat</div>`;
+
+            } catch (e) {
+                el.innerHTML = `<div class="error">> ERROR: Could not retrieve ASN data — ${e.message}</div>`;
+            }
+        }
+
+        // ── IP Comparison ────────────────────────────────────────────
+        function detectVPN(org) {
+            return org && ['vpn','proxy','hosting','datacenter','cloud'].some(k => org.toLowerCase().includes(k));
+        }
+
+        async function runIPComparison() {
+            const ip1 = document.getElementById('compare-ip1').value.trim();
+            const ip2 = document.getElementById('compare-ip2').value.trim();
+            const el   = document.getElementById('compare-content');
+
+            if (!ip1 || !isValidIP(ip1)) { el.innerHTML = '<div class="error">> ERROR: Invalid first IP address</div>';  return; }
+            if (!ip2 || !isValidIP(ip2)) { el.innerHTML = '<div class="error">> ERROR: Invalid second IP address</div>'; return; }
+
+            el.innerHTML = '<div class="loading">> FETCHING DATA FOR BOTH IPs...</div>';
+            try {
+                const [r1, r2] = await Promise.all([fetchWithFallback(ip1), fetchWithFallback(ip2)]);
+                const d1 = r1.data, d2 = r2.data;
+
+                const fields = [
+                    { label: 'IP',         v1: d1.ip,                                      v2: d2.ip                                      },
+                    { label: 'ISP / Org',  v1: d1.org,                                     v2: d2.org                                     },
+                    { label: 'ASN',        v1: d1.asn,                                     v2: d2.asn                                     },
+                    { label: 'City',       v1: d1.city,                                    v2: d2.city                                    },
+                    { label: 'Region',     v1: d1.region,                                  v2: d2.region                                  },
+                    { label: 'Country',    v1: d1.country_name,                            v2: d2.country_name                            },
+                    { label: 'Timezone',   v1: d1.timezone,                                v2: d2.timezone                                },
+                    { label: 'Postal',     v1: d1.postal,                                  v2: d2.postal                                  },
+                    { label: 'Protocol',   v1: d1.version || 'IPv4',                       v2: d2.version || 'IPv4'                       },
+                    { label: 'Lat / Lon',  v1: `${d1.latitude}, ${d1.longitude}`,          v2: `${d2.latitude}, ${d2.longitude}`          },
+                    { label: 'VPN / Proxy',v1: detectVPN(d1.org) ? 'YES' : 'CLEAN',        v2: detectVPN(d2.org) ? 'YES' : 'CLEAN'        },
+                ];
+
+                const rows = fields.map(f => {
+                    const same = (f.v1 || '') === (f.v2 || '');
+                    return `<tr class="${same ? 'compare-match' : 'compare-diff'}">
+                        <td class="field-col">[${f.label.toUpperCase()}]</td>
+                        <td>${f.v1 || '—'}</td>
+                        <td>${f.v2 || '—'}</td>
+                    </tr>`;
+                }).join('');
+
+                el.innerHTML = `
+                    <table class="compare-table">
+                        <thead><tr>
+                            <th>FIELD</th>
+                            <th>${ip1}</th>
+                            <th>${ip2}</th>
+                        </tr></thead>
+                        <tbody>${rows}</tbody>
+                    </table>
+                    <div style="margin-top:10px;font-size:0.75em;opacity:0.5;">> Highlighted rows = values differ</div>
+                `;
+            } catch (e) {
+                el.innerHTML = `<div class="error">> ERROR: ${e.message}</div>`;
+            }
+        }
+
+        // ── Bulk IP Lookup ───────────────────────────────────────────
+        let bulkResults = [];
+
+        async function runBulkLookup() {
+            const raw  = document.getElementById('bulk-input').value;
+            const ips  = [...new Set(
+                raw.split(/[\n,\s]+/).map(s => s.trim()).filter(isValidIP)
+            )].slice(0, 20);
+            const el   = document.getElementById('bulk-content');
+            const runBtn = document.getElementById('bulk-run-btn');
+
+            if (ips.length === 0) {
+                el.innerHTML = '<div class="error">> ERROR: No valid IP addresses found (max 20, one per line)</div>';
+                return;
+            }
+
+            runBtn.disabled = true;
+            document.getElementById('bulk-export-btn').style.display = 'none';
+            el.innerHTML = '';
+            bulkResults = [];
+
+            const progress = document.createElement('div');
+            progress.className = 'bulk-progress';
+            el.appendChild(progress);
+
+            for (let i = 0; i < ips.length; i++) {
+                progress.textContent = `> PROCESSING ${i + 1} / ${ips.length}: ${ips[i]}`;
+                try {
+                    const { data } = await fetchWithFallback(ips[i]);
+                    bulkResults.push({
+                        ip:      data.ip,
+                        isp:     data.org || '—',
+                        city:    data.city || '—',
+                        country: data.country_name || '—',
+                        asn:     data.asn || '—',
+                        vpn:     detectVPN(data.org),
+                        error:   false,
+                    });
+                } catch (_) {
+                    bulkResults.push({ ip: ips[i], isp: '—', city: '—', country: '—', asn: '—', vpn: false, error: true });
+                }
+                if (i < ips.length - 1) await new Promise(r => setTimeout(r, 350));
+            }
+
+            progress.remove();
+
+            const rows = bulkResults.map(d => `
+                <tr class="${d.error ? 'bulk-error' : ''}">
+                    <td class="bulk-ip">${d.ip}</td>
+                    <td>${d.isp}</td>
+                    <td>${d.city}</td>
+                    <td>${d.country}</td>
+                    <td>${d.asn}</td>
+                    <td class="${d.vpn ? 'bulk-vpn' : 'bulk-clean'}">${d.error ? 'ERROR' : d.vpn ? 'VPN/PROXY' : 'CLEAN'}</td>
+                </tr>`).join('');
+
+            el.innerHTML = `
+                <table class="bulk-table">
+                    <thead><tr>
+                        <th>IP</th><th>ISP / ORG</th><th>CITY</th><th>COUNTRY</th><th>ASN</th><th>STATUS</th>
+                    </tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            `;
+
+            runBtn.disabled = false;
+            document.getElementById('bulk-export-btn').style.display = '';
+        }
+
+        function exportBulkCSV() {
+            if (!bulkResults.length) return;
+            const header = ['IP', 'ISP / Org', 'City', 'Country', 'ASN', 'VPN/Proxy'];
+            const rows   = bulkResults.map(d =>
+                [d.ip, d.isp, d.city, d.country, d.asn, d.error ? 'ERROR' : d.vpn ? 'Yes' : 'No']
+                .map(v => `"${String(v).replace(/"/g, '""')}"`)
+                .join(',')
+            );
+            const blob = new Blob([[header.join(','), ...rows].join('\r\n')], { type: 'text/csv' });
+            const url  = URL.createObjectURL(blob);
+            const a    = Object.assign(document.createElement('a'), { href: url, download: `bulk-ip-${Date.now()}.csv` });
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
         // ── Theme system ─────────────────────────────────────────────
         const THEME_KEY = 'wgus-ip-theme';
         const loadedThemes = {};
@@ -2140,6 +2504,15 @@
                 document.body.style.setProperty(`--${key}`, val);
             });
 
+            // Cache vars + layout flags so the preload script can apply them on next load
+            try {
+                localStorage.setItem('wgusip-theme-cache', JSON.stringify({
+                    vars: theme.variables,
+                    wgus: theme.base === 'wgus',
+                    light: brightness > 0x88,
+                }));
+            } catch (_) {}
+
             // Swap page title / h1 if theme provides one, otherwise restore default
             document.querySelector('h1').textContent = theme.title
                 ? theme.title
@@ -2149,9 +2522,9 @@
             const logoLink = document.querySelector('.wgus-logo');
             if (theme.logo) {
                 logoLink.innerHTML = `<img src="${theme.logo}" alt="${theme.name}" class="wgus-custom-logo">`;
-                if (theme.logo_href) logoLink.href = theme.logo_href;
+                logoLink.href = theme.logo_href || 'https://wegotussome.com';
             } else {
-                logoLink.href = 'https://wegotussome.com';
+                logoLink.href = theme.logo_href || 'https://wegotussome.com';
                 logoLink.innerHTML = `<div class="wgus-logo-dot"></div>wegotussome <span class="wgus-breadcrumb">&nbsp;/ ip</span>`;
             }
 
@@ -2245,6 +2618,22 @@
                 document.getElementById('cidr-input').value = currentIP ? `${currentIP}/24` : '';
                 document.getElementById('cidr-content').innerHTML = '';
             }},
+            asn:         { el: 'asn-section',           btn: 'asn-toggle',         closed: '> ASN INFO',        open: '> HIDE ASN INFO',     fn: () => {
+                const asn = currentData?.asn || '';
+                document.getElementById('asn-input').value = asn;
+                if (asn) getASNInfo(asn);
+                else document.getElementById('asn-content').innerHTML = '<div style="opacity:0.5;font-size:0.9em;">> No ASN detected for current IP — enter one manually above</div>';
+            }},
+            compare:     { el: 'compare-section',       btn: 'compare-toggle',     closed: '> COMPARE IPs',     open: '> HIDE COMPARE',      fn: () => {
+                document.getElementById('compare-ip1').value = currentIP || '';
+                document.getElementById('compare-ip2').value = '';
+                document.getElementById('compare-content').innerHTML = '';
+            }},
+            bulk:        { el: 'bulk-section',          btn: 'bulk-toggle',        closed: '> BULK LOOKUP',     open: '> HIDE BULK LOOKUP',  fn: () => {
+                document.getElementById('bulk-input').value = '';
+                document.getElementById('bulk-content').innerHTML = '';
+                document.getElementById('bulk-export-btn').style.display = 'none';
+            }},
         };
 
         function closeAllSections(except) {
@@ -2288,6 +2677,22 @@
         document.getElementById('cidr-input').addEventListener('keypress', e => {
             if (e.key === 'Enter') displayCIDR();
         });
+
+        // ASN lookup
+        document.getElementById('asn-lookup-btn').addEventListener('click', () => getASNInfo(document.getElementById('asn-input').value));
+        document.getElementById('asn-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') getASNInfo(document.getElementById('asn-input').value);
+        });
+
+        // IP comparison
+        document.getElementById('compare-btn').addEventListener('click', runIPComparison);
+        document.getElementById('compare-ip2').addEventListener('keypress', e => {
+            if (e.key === 'Enter') runIPComparison();
+        });
+
+        // Bulk lookup
+        document.getElementById('bulk-run-btn').addEventListener('click', runBulkLookup);
+        document.getElementById('bulk-export-btn').addEventListener('click', exportBulkCSV);
 
         // Share / permalink button
         document.getElementById('share-btn').addEventListener('click', function () {

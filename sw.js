@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wegotusyourip-v11';
+const CACHE_NAME = 'wegotusyourip-v17';
 
 const APP_SHELL = [
     './',
@@ -16,6 +16,7 @@ const APP_SHELL = [
     './themes/nord.json',
     './themes/gruvbox-dark.json',
     './themes/tokyo-night.json',
+    './themes/vortex.json',
     './themes/solarized-dark.json',
     './themes/solarized-light.json',
     './themes/monokai.json',
@@ -37,7 +38,7 @@ const APP_SHELL = [
 ];
 
 // API hostnames that should always be network-first (no offline cache)
-const API_HOSTS = ['ipapi.co', 'ipwho.is', 'ipinfo.io', 'dns.google'];
+const API_HOSTS = ['ipapi.co', 'ipwho.is', 'ipinfo.io', 'dns.google', 'stat.ripe.net'];
 
 // Tile/CDN hosts to cache aggressively (map tiles, fonts)
 const CACHE_HOSTS = [
