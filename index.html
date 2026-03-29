@@ -37,11 +37,26 @@
         (function () {
             try {
                 var c = JSON.parse(localStorage.getItem('wgusip-theme-cache'));
-                if (!c || !c.vars) return;
-                var s = document.documentElement.style;
-                Object.keys(c.vars).forEach(function (k) { s.setProperty('--' + k, c.vars[k]); });
-                if (c.wgus)  document.documentElement.dataset.preloadWgus = '1';
-                if (c.light) document.documentElement.dataset.preloadLight = '1';
+                if (c && c.vars) {
+                    var s = document.documentElement.style;
+                    Object.keys(c.vars).forEach(function (k) { s.setProperty('--' + k, c.vars[k]); });
+                    if (c.wgus)  document.documentElement.dataset.preloadWgus = '1';
+                    if (c.light) document.documentElement.dataset.preloadLight = '1';
+                } else if (!localStorage.getItem('wgus-ip-theme') &&
+                           window.matchMedia('(prefers-color-scheme: light)').matches) {
+                    // First-time visitor with light OS preference — pre-apply wgus-light vars
+                    var lv = {
+                        'accent': '#3d00cc', 'accent-rgb': '61, 0, 204', 'accent-dim': '#3000a8',
+                        'page-bg': '#f6f8ff', 'surface': '#ffffff', 'inner-bg': '#edf0ff',
+                        'danger': '#b83232', 'text': '#0a0020', 'muted': '#7070aa',
+                        'border': '#c0c8f0', 'font-body': "'JetBrains Mono', monospace",
+                        'font-head': "'JetBrains Mono', monospace", 'scanlines': 'none', 'vignette': 'none'
+                    };
+                    var s = document.documentElement.style;
+                    Object.keys(lv).forEach(function (k) { s.setProperty('--' + k, lv[k]); });
+                    document.documentElement.dataset.preloadWgus = '1';
+                    document.documentElement.dataset.preloadLight = '1';
+                }
             } catch (_) {}
         })();
     </script>
@@ -3280,13 +3295,20 @@
                     document.getElementById('theme-menu').style.display = 'none';
                 }
 
-                applyTheme(hostTheme || localStorage.getItem(THEME_KEY) || 'wgus-dark');
+                const systemDefault = window.matchMedia('(prefers-color-scheme: light)').matches ? 'wgus-light' : 'wgus-dark';
+                applyTheme(hostTheme || localStorage.getItem(THEME_KEY) || systemDefault);
             } catch (e) {
                 console.error('[WGUSIP] Failed to load themes:', e);
             }
         }
 
         loadThemes();
+
+        // Follow OS theme changes if the user hasn't set a manual preference
+        window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+            if (localStorage.getItem(THEME_KEY)) return;
+            applyTheme(e.matches ? 'wgus-light' : 'wgus-dark');
+        });
 
         // Fetch IP info when page loads — honour ?ip= permalink
         (function () {
