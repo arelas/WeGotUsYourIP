@@ -17,18 +17,18 @@
 | **CRT-Amber** | **CRT-CGA** | **CRT-Cyan** |
 | <img src="screenshots/crt-magenta.png" width="400" alt="crt-magenta"> | <img src="screenshots/crt-green.png" width="400" alt="crt-green"> | <img src="screenshots/crt-vortex.png" width="400" alt="crt-vortex"> |
 | **CRT-Magenta** | **CRT-Green** | **CRT-Vortex** |
-| <img src="screenshots/crt-white.png" width="400" alt="crt-white"> | <img src="screenshots/dracula.png" width="400" alt="dracula"> | <img src="screenshots/dracula-dark.png" width="400" alt="dracula-dark"> |
-| **CRT-White** | **Dracula** | **Dracula Dark** |
-| <img src="screenshots/fusion.png" width="400" alt="fusion"> | <img src="screenshots/github-dark.png" width="400" alt="github-dark"> | <img src="screenshots/github-light.png" width="400" alt="github-light"> |
-| **Fusion** | **GitHub Dark** | **GitHub Light** |
+| <img src="screenshots/crt-white.png" width="400" alt="crt-white"> | <img src="screenshots/dracula.png" width="400" alt="dracula"> | <img src="screenshots/fusion.png" width="400" alt="fusion"> |
+| **CRT-White** | **Dracula** | **Fusion** |
+| <img src="screenshots/dracula-dark.png" width="400" alt="dracula-dark"> | <img src="screenshots/github-dark.png" width="400" alt="github-dark"> | <img src="screenshots/github-light.png" width="400" alt="github-light"> |
+| **Dracula Dark** | **GitHub Dark** | **GitHub Light** |
 | <img src="screenshots/gruvbox-dark.png" width="400" alt="gruvbox-dark"> | <img src="screenshots/monokai.png" width="400" alt="monokai"> | <img src="screenshots/nord.png" width="400" alt="nord"> |
 | **Gruvbox Dark** | **Monokai** | **Nord** |
 | <img src="screenshots/one-dark.png" width="400" alt="one-dark"> | <img src="screenshots/solarized-dark.png" width="400" alt="solarized-dark"> | <img src="screenshots/solarized-light.png" width="400" alt="solarized-light"> |
 | **One Dark** | **Solarized Dark** | **Solarized Light** |
 | <img src="screenshots/tokyo-night.png" width="400" alt="tokyo-night"> | <img src="screenshots/vortex.png" width="400" alt="vortex"> | <img src="screenshots/wgus-dark.png" width="400" alt="wgus-dark"> |
 | **Tokyo Night** | **Vortex** | **WGUS Dark** |
-| <img src="screenshots/wgus-light.png" width="400" alt="wgus-light"> | | |
-| **WGUS Light** | | |
+| <img src="screenshots/wgus-light.png" width="400" alt="wgus-light"> |  |  |
+| **WGUS Light** |  |  |
 
 ## Overview
 
