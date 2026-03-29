@@ -15,22 +15,24 @@
 | **Catppuccin Latte** | **Catppuccin Mocha** | **Commodore 64** |
 | <img src="screenshots/crt-amber.png" width="400" alt="crt-amber"> | <img src="screenshots/crt-cga.png" width="400" alt="crt-cga"> | <img src="screenshots/crt-cyan.png" width="400" alt="crt-cyan"> |
 | **CRT-Amber** | **CRT-CGA** | **CRT-Cyan** |
-| <img src="screenshots/crt-magenta.png" width="400" alt="crt-magenta"> | <img src="screenshots/crt-green.png" width="400" alt="crt-green"> | <img src="screenshots/crt-white.png" width="400" alt="crt-white"> |
-| **CRT-Magenta** | **CRT-Green** | **CRT-White** |
-| <img src="screenshots/dracula.png" width="400" alt="dracula"> | <img src="screenshots/dracula-dark.png" width="400" alt="dracula-dark"> | <img src="screenshots/github-dark.png" width="400" alt="github-dark"> |
-| **Dracula** | **Dracula Dark** | **GitHub Dark** |
-| <img src="screenshots/github-light.png" width="400" alt="github-light"> | <img src="screenshots/gruvbox-dark.png" width="400" alt="gruvbox-dark"> | <img src="screenshots/monokai.png" width="400" alt="monokai"> |
-| **GitHub Light** | **Gruvbox Dark** | **Monokai** |
-| <img src="screenshots/nord.png" width="400" alt="nord"> | <img src="screenshots/one-dark.png" width="400" alt="one-dark"> | <img src="screenshots/solarized-dark.png" width="400" alt="solarized-dark"> |
-| **Nord** | **One Dark** | **Solarized Dark** |
-| <img src="screenshots/solarized-light.png" width="400" alt="solarized-light"> | <img src="screenshots/tokyo-night.png" width="400" alt="tokyo-night"> | <img src="screenshots/wgus-dark.png" width="400" alt="wgus-dark"> |
-| **Solarized Light** | **Tokyo Night** | **WGUS Dark** |
+| <img src="screenshots/crt-magenta.png" width="400" alt="crt-magenta"> | <img src="screenshots/crt-green.png" width="400" alt="crt-green"> | <img src="screenshots/crt-vortex.png" width="400" alt="crt-vortex"> |
+| **CRT-Magenta** | **CRT-Green** | **CRT-Vortex** |
+| <img src="screenshots/crt-white.png" width="400" alt="crt-white"> | <img src="screenshots/dracula.png" width="400" alt="dracula"> | <img src="screenshots/dracula-dark.png" width="400" alt="dracula-dark"> |
+| **CRT-White** | **Dracula** | **Dracula Dark** |
+| <img src="screenshots/fusion.png" width="400" alt="fusion"> | <img src="screenshots/github-dark.png" width="400" alt="github-dark"> | <img src="screenshots/github-light.png" width="400" alt="github-light"> |
+| **Fusion** | **GitHub Dark** | **GitHub Light** |
+| <img src="screenshots/gruvbox-dark.png" width="400" alt="gruvbox-dark"> | <img src="screenshots/monokai.png" width="400" alt="monokai"> | <img src="screenshots/nord.png" width="400" alt="nord"> |
+| **Gruvbox Dark** | **Monokai** | **Nord** |
+| <img src="screenshots/one-dark.png" width="400" alt="one-dark"> | <img src="screenshots/solarized-dark.png" width="400" alt="solarized-dark"> | <img src="screenshots/solarized-light.png" width="400" alt="solarized-light"> |
+| **One Dark** | **Solarized Dark** | **Solarized Light** |
+| <img src="screenshots/tokyo-night.png" width="400" alt="tokyo-night"> | <img src="screenshots/vortex.png" width="400" alt="vortex"> | <img src="screenshots/wgus-dark.png" width="400" alt="wgus-dark"> |
+| **Tokyo Night** | **Vortex** | **WGUS Dark** |
 | <img src="screenshots/wgus-light.png" width="400" alt="wgus-light"> | | |
 | **WGUS Light** | | |
 
 ## Overview
 
-**We Got Us Your IP** is a single-page web application that provides comprehensive IP address analysis and network information. It ships with a library of 21 community themes — from the default hacker terminal green to WGUS brand themes, retro CRT palettes, Commodore 64, and popular developer themes like Dracula, Nord, and Catppuccin. Themes are defined as plain JSON files and can be added or customized without touching the application code. All features run entirely client-side with no build process required.
+**We Got Us Your IP** is a single-page web application that provides comprehensive IP address analysis and network information. It ships with a library of 25 community themes — from the default hacker terminal green to WGUS brand themes, retro CRT palettes, Commodore 64, and popular developer themes like Dracula, Nord, and Catppuccin. Themes are defined as plain JSON files and can be added or customized without touching the application code. All features run entirely client-side with no build process required.
 
 ### Key Features
 
@@ -45,7 +47,7 @@
 - **Export Data** — Download all collected data as JSON
 - **Quick Tools** — Direct links to speed tests, DNS checks, and more
 - **API Rate Limit Handling** — Automatic fallback chain across three providers with live countdown
-- **Theme Library** — 21 themes via JSON theme files; add your own without touching app code
+- **Theme Library** — 25 themes via JSON theme files; add your own without touching app code
 - **PWA / Offline Support** — Installable as a web app; app shell cached via service worker for offline use
 
 ## Features in Detail
@@ -391,7 +393,7 @@ Fully responsive design optimized for:
 - [x] WHOIS fallback resilience — isolated per-provider error handling
 - [x] Dark / light mode — WGUS Dark and WGUS Light themes
 - [x] JSON theme file system — community themes loadable without code changes
-- [x] Theme library — 21 themes including CRT, retro, and popular developer palettes
+- [x] Theme library — 25 themes including CRT, retro, and popular developer palettes
 - [x] Hamburger theme menu — clean dropdown replacing the inline toggle button
 
 ### Version 3.0 (Future)

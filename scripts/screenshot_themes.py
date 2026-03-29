@@ -95,15 +95,25 @@ def main():
 
     print(f"\nDone. {len(themes)} screenshots saved to screenshots/")
 
-    # Print a ready-to-paste README table
-    print("\n── README table (3 columns) ────────────────────────────────────\n")
+    # Build README gallery table and write it back into README.md
     rows = []
     row_imgs  = []
     row_names = []
+
+    # Load display names from theme JSON files for proper capitalisation
+    def theme_display_name(tid, theme_file):
+        path = os.path.join(REPO_ROOT, "themes", theme_file)
+        try:
+            with open(path) as f:
+                return json.load(f).get("name", tid)
+        except Exception:
+            return tid
+
     for i, theme in enumerate(themes):
-        tid  = theme["id"]
+        tid   = theme["id"]
+        name  = theme_display_name(tid, theme["file"])
         row_imgs.append(f'<img src="screenshots/{tid}.png" width="400" alt="{tid}">')
-        row_names.append(f'**{tid}**')
+        row_names.append(f'**{name}**')
         if (i + 1) % 3 == 0 or i == len(themes) - 1:
             while len(row_imgs) < 3:
                 row_imgs.append('')
@@ -112,12 +122,30 @@ def main():
             rows.append(f"| {' | '.join(row_names)} |")
             row_imgs, row_names = [], []
 
-    header = "| | | |"
-    sep    = "|---|---|---|"
-    print(header)
-    print(sep)
-    for row in rows:
-        print(row)
+    gallery_lines = ["| | | |", "|---|---|---|"] + rows
+    gallery_block = "\n".join(gallery_lines)
+
+    readme_path = os.path.join(REPO_ROOT, "README.md")
+    with open(readme_path) as f:
+        readme = f.read()
+
+    import re
+    updated = re.sub(
+        r'(## Theme Gallery\n\n)(\| \| \| \|.*?)(\n\n## )',
+        lambda m: m.group(1) + gallery_block + m.group(3),
+        readme,
+        flags=re.DOTALL,
+    )
+
+    if updated != readme:
+        with open(readme_path, "w") as f:
+            f.write(updated)
+        print("README.md gallery updated.")
+    else:
+        print("README.md gallery unchanged.")
+
+    print("\n── README table (3 columns) ────────────────────────────────────\n")
+    print(gallery_block)
 
 if __name__ == "__main__":
     main()
