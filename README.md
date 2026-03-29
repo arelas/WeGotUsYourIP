@@ -1,8 +1,8 @@
 # We Got Us Your IP
 
-> A single-page IP analysis tool with a terminal hacker aesthetic and an optional WGUS brand theme. Instantly detects your IP address and provides comprehensive network information including WHOIS data, reverse DNS, VPN detection, real-time DNSBL blacklist checks, geolocation mapping, and browser fingerprinting.
+> A single-page IP analysis tool with a terminal hacker aesthetic and an optional WGUS brand theme. Instantly detects your IP address and provides comprehensive network information including WHOIS data, reverse DNS, VPN detection, real-time DNSBL blacklist checks, geolocation mapping, traceroute visualization, ASN lookup, browser fingerprinting, and lookup history.
 
-[![Version](https://img.shields.io/badge/version-2.0-green.svg)](https://github.com/arelas/WeGotUsYourIP)
+[![Version](https://img.shields.io/badge/version-3.0-green.svg)](https://github.com/arelas/WeGotUsYourIP)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 **Live Demo**: [ip.wegotussome.com](https://ip.wegotussome.com)
@@ -42,10 +42,16 @@
 - **WHOIS Lookup** — Detailed network registration information for any IP
 - **Reverse DNS** — PTR record lookup via DNS-over-HTTPS for any IP
 - **Geolocation Map** — Interactive Leaflet.js map pinned to the IP's coordinates
+- **Traceroute Visualization** — Network hops plotted on a live map via GlobalPing API
+- **ASN Lookup** — Dedicated Autonomous System info panel powered by RIPEstat
+- **IP Comparison** — Look up two IPs side by side with diff highlighting
+- **Bulk IP Lookup** — Look up up to 20 IPs in one go, exportable as CSV
 - **Comprehensive Blacklist Check** — Real DNSBL queries across 5 lists in parallel
 - **Browser Fingerprinting** — Detailed analysis of your device and browser
+- **CIDR / Subnet Calculator** — Fully client-side network math
+- **Lookup History** — Activity chart, IP address history, and recent lookup log stored locally
+- **Share / Permalink** — `?ip=x.x.x.x` auto-runs a lookup on page load
 - **Export Data** — Download all collected data as JSON
-- **Quick Tools** — Direct links to speed tests, DNS checks, and more
 - **API Rate Limit Handling** — Automatic fallback chain across three providers with live countdown
 - **Theme Library** — 25 themes via JSON theme files; add your own without touching app code
 - **PWA / Offline Support** — Installable as a web app; app shell cached via service worker for offline use
@@ -86,6 +92,27 @@ Uses the same three-provider fallback chain as the main IP lookup (ipapi.co → 
 - Popup shows IP, city, and country; coordinates displayed below the map
 - Correctly handles the hidden-to-visible transition (`invalidateSize`)
 
+### Traceroute Visualization
+- Runs a real traceroute using the [GlobalPing API](https://www.globalping.io/) — no API key required
+- Network hops are plotted as connected markers on a Leaflet map
+- Private/RFC-1918 hops are detected and skipped gracefully
+- Falls back to a text-only hop list if fewer than 2 public hops can be geolocated
+
+### ASN Lookup
+- Fetches Autonomous System details from [RIPEstat](https://stat.ripe.net/) — authoritative, CORS-friendly, no key required
+- Displays AS name, description, country, abuse contact, and registered prefixes
+- Pre-fills the ASN from the current IP on open; also accepts manual entry
+
+### IP Comparison
+- Enter two IP addresses and compare their data side by side
+- Fields that differ between the two IPs are highlighted for quick scanning
+- Uses the same fallback provider chain as the main lookup
+
+### Bulk IP Lookup
+- Paste up to 20 IP addresses (one per line) for sequential lookup
+- Results shown in a summary table with ISP, location, and ASN per IP
+- Export all results as a CSV file
+
 ### Comprehensive Blacklist Check
 Real DNSBL queries against 5 blacklists via DNS-over-HTTPS (`dns.google/resolve`):
 
@@ -101,6 +128,18 @@ Real DNSBL queries against 5 blacklists via DNS-over-HTTPS (`dns.google/resolve`
 - CLEAN / LISTED badge per list, plus an overall summary score at the top
 - AbuseIPDB included as a manual link (requires account for API access)
 - Gracefully degrades to manual links for IPv6 (DNSBL is IPv4-only by spec)
+
+### CIDR / Subnet Calculator
+- Parses any CIDR notation (e.g. `192.168.1.0/24`)
+- Displays network address, broadcast, subnet mask, host range, and usable host count
+- Fully client-side — no network requests
+
+### Lookup History
+- Every IP lookup is automatically recorded to `localStorage` (`wgusip-history`, max 200 entries)
+- **Activity chart** — SVG bar chart of lookups over the last 14 days
+- **Your IP addresses** — own-IP lookups grouped by IP with location, org, date range, and count
+- **Recent lookups log** — scrollable list of the last 50 lookups with timestamp, IP, and location
+- Clear history button wipes all stored entries
 
 ### API Rate Limit Handling
 Three-provider fallback chain for both IP detection and WHOIS lookups:
@@ -125,11 +164,11 @@ All provider responses are normalised to the same internal shape — WHOIS, map,
 
 ### Theme System
 
-Themes are selected via a hamburger menu (top-right corner). Your preference is saved to `localStorage` and restored on next visit.
+Themes are selected via a hamburger menu (top-right corner). Your preference is saved to `localStorage` and restored on next visit. A preload script in `<head>` caches and re-applies your theme's CSS variables synchronously before first paint, preventing any flash of the default green theme.
 
 Themes are defined as plain JSON files in the `themes/` directory and loaded dynamically at runtime. Adding a new theme requires only a JSON file — no code changes needed.
 
-#### Included Themes (21)
+#### Included Themes (25)
 
 | Theme | Style |
 |---|---|
@@ -143,8 +182,10 @@ Themes are defined as plain JSON files in the `themes/` directory and loaded dyn
 | **CRT-Cyan** | IBM CGA cyan on black |
 | **CRT-Green** | Classic terminal green on black |
 | **CRT-Magenta** | IBM CGA magenta on black |
+| **CRT-Vortex** | Electric green text, magenta borders — inspired by Vortex BBS ANSI art |
 | **CRT-White** | Monochrome white phosphor |
 | **Dracula** | Purple/pink on dark grey, the classic dark theme |
+| **Fusion** | WGUS Fusion brand theme |
 | **GitHub Dark** | Familiar dark interface from github.com |
 | **GitHub Light** | Clean white interface from github.com |
 | **Gruvbox Dark** | Warm retro ochre and earth tones |
@@ -154,6 +195,7 @@ Themes are defined as plain JSON files in the `themes/` directory and loaded dyn
 | **Solarized Dark** | Precision-designed dark with warm tones |
 | **Solarized Light** | Warm cream background light palette |
 | **Tokyo Night** | Neon purple-blue midnight city aesthetic |
+| **Vortex** | WGUS style — electric green on black with magenta accents |
 
 ## Technology Stack
 
@@ -167,9 +209,11 @@ Themes are defined as plain JSON files in the `themes/` directory and loaded dyn
 - **ipwho.is** — Fallback provider #1 (rate limit handling)
 - **ipinfo.io** — Fallback provider #2 (rate limit handling)
 - **dns.google/resolve** — DNS-over-HTTPS for PTR records and DNSBL queries
+- **GlobalPing API** — Traceroute measurements (no key required)
+- **RIPEstat** — ASN / Autonomous System data (no key required)
 
 ### Libraries
-- **Leaflet.js 1.9.4** (cdnjs) — Interactive map
+- **Leaflet.js 1.9.4** (cdnjs) — Interactive maps (geolocation and traceroute)
 
 ### Fonts
 - **JetBrains Mono** (Google Fonts) — WGUS and developer themes
@@ -178,7 +222,7 @@ Themes are defined as plain JSON files in the `themes/` directory and loaded dyn
 ### Browser APIs
 - Clipboard API (copy functionality)
 - Navigator API (device fingerprinting)
-- localStorage (theme preference)
+- localStorage (theme preference, lookup history)
 - Intl API (timezone detection)
 
 ## Installation
@@ -198,7 +242,7 @@ scp -r index.html manifest.json sw.js icon.svg themes/ user@yourserver.com:/var/
 git clone https://github.com/arelas/WeGotUsYourIP
 cd WeGotUsYourIP
 
-# Or use a local server (recommended for Clipboard API and service worker)
+# Use a local server (required for Clipboard API and service worker)
 python -m http.server 8000
 # Visit http://localhost:8000
 ```
@@ -219,24 +263,35 @@ python -m http.server 8000
    - `> WHOIS MY IP` — Detailed registration lookup
    - `> REVERSE DNS` — PTR record for your IP
    - `> VIEW MAP` — Interactive geolocation map
+   - `> TRACEROUTE` — Visualize network hops on a map
+   - `> ASN INFO` — Autonomous System details
    - `> CHECK BLACKLIST` — Real-time DNSBL checks across 5 lists
    - `> BROWSER INFO` — Device fingerprint analysis
+   - `> CIDR CALC` — Subnet calculator
+   - `> COMPARE IPs` — Side-by-side comparison of two IPs
+   - `> BULK LOOKUP` — Look up multiple IPs at once
+   - `> HISTORY` — Activity chart and recent lookup log
+   - `> SHARE / PERMALINK` — Copy a shareable URL for this IP
    - `> EXPORT DATA` — Download JSON report
 
 ### Custom IP Lookup
 
-1. Enter any IPv4 or IPv6 address in the input field
+1. Enter any IPv4 or IPv6 address in the input field below the action buttons
 2. Click `> WHOIS LOOKUP` (or press Enter)
 3. View detailed WHOIS information for that IP
 
+### Permalink / Share
+
+Append `?ip=x.x.x.x` to the URL and share it — the page will automatically run a lookup for that IP on load.
+
 ### Switching Themes
 
-Click the hamburger icon (≡) in the top-right corner to open the theme picker. Your selection is saved automatically and restored on next visit.
+Click the hamburger icon (≡) in the top-right corner to open the theme picker. Your selection is saved automatically and restored on next visit with no flash of the default theme.
 
 ### Quick Tools
 
 Bottom toolbar links to:
-- **Speed Test** — fast.com
+- **Speed Test** — speed.cloudflare.com
 - **DNS Check** — dnschecker.org
 - **MX Toolbox** — mxtoolbox.com
 - **Port Scanner** — whatismyip.com port scanner
@@ -285,7 +340,7 @@ Create a JSON file in the `themes/` directory:
 }
 ```
 
-Then add an entry to `themes/index.json`:
+Then add an entry to `themes/index.json` and `sw.js` APP_SHELL, and bump the `CACHE_NAME` version:
 
 ```json
 { "id": "my-theme", "file": "my-theme.json" }
@@ -298,6 +353,8 @@ Then add an entry to `themes/index.json`:
 **`border` vs `accent`:** In terminal-base themes, `--border` controls structural panel borders while `--accent` controls text, glows, and interactive highlights. Set them to the same value for single-color themes; use distinct values (like CRT-CGA) to create multi-color palettes.
 
 **Light themes:** Any theme with a `page-bg` brightness above `#888` is automatically detected as light and receives subtle structural adjustments (reduced noise opacity, soft container shadow).
+
+**`logo_href`:** Optionally set `"logo_href": "https://example.com/"` in a theme file to make the header logo and breadcrumb link to a custom URL instead of the default.
 
 ### Funny Messages
 
@@ -341,11 +398,12 @@ Fully responsive design optimized for:
 ### What We Collect
 - Your IP address (via API, not stored by us)
 - Browser/device information (client-side only)
+- Lookup history stored locally in your own browser's `localStorage` — never sent anywhere
 
 ### What We Don't Do
 - ❌ No tracking cookies
 - ❌ No analytics
-- ❌ No data storage
+- ❌ No server-side data storage
 - ❌ No third-party tracking
 - ❌ No authentication required
 
@@ -355,6 +413,8 @@ Fully responsive design optimized for:
 - **ipinfo.io** — [Privacy Policy](https://ipinfo.io/privacy-policy)
 - **dns.google** — [Google Privacy Policy](https://policies.google.com/privacy)
 - **OpenStreetMap** — [Privacy Policy](https://wiki.osmfoundation.org/wiki/Privacy_Policy)
+- **GlobalPing** — [Privacy Policy](https://www.globalping.io/privacy)
+- **RIPEstat** — [RIPE NCC Privacy Statement](https://www.ripe.net/about-us/legal/ripe-ncc-privacy-statement/)
 
 ## Troubleshooting
 
@@ -375,6 +435,9 @@ Fully responsive design optimized for:
 **Issue**: Blacklist check shows all ERROR
 **Solution**: Verify dns.google is accessible from your network
 
+**Issue**: Traceroute shows no map
+**Solution**: The GlobalPing API requires at least 2 public (non-private) hops with resolvable geolocation; a text hop list is always shown as a fallback
+
 **Issue**: Fonts not loading
 **Solution**: Ensure fonts.googleapis.com is reachable; site falls back to system monospace fonts gracefully
 
@@ -382,7 +445,7 @@ Fully responsive design optimized for:
 **Solution**: Clear browser cache and hard refresh (Ctrl+Shift+R)
 
 **Issue**: Theme not appearing after adding a custom JSON file
-**Solution**: Confirm the entry is added to `themes/index.json` and the filename matches; check the browser console for fetch errors
+**Solution**: Confirm the entry is added to `themes/index.json` and `sw.js` APP_SHELL, the `CACHE_NAME` version is bumped, and the filename matches; check the browser console for fetch errors
 
 ## Roadmap
 
@@ -395,17 +458,13 @@ Fully responsive design optimized for:
 - [x] JSON theme file system — community themes loadable without code changes
 - [x] Theme library — 25 themes including CRT, retro, and popular developer palettes
 - [x] Hamburger theme menu — clean dropdown replacing the inline toggle button
-
-### Version 3.0 (Future)
-- [ ] Historical data charts
-- [ ] Multi-language support
-- [ ] Bulk IP lookup
-- [ ] IP comparison — look up two IPs side by side
-- [ ] Share / permalink — `?ip=1.2.3.4` auto-runs lookup on page load
-- [ ] Traceroute visualisation — show network hops plotted on the map
-- [ ] ASN lookup — dedicated Autonomous System info panel
-- [ ] CIDR / subnet calculator — fits the network tool theme
-- [ ] Clipboard history — remember the last N IPs looked up
+- [x] Share / permalink — `?ip=1.2.3.4` auto-runs lookup on page load
+- [x] CIDR / subnet calculator
+- [x] Traceroute visualization — hops plotted on map via GlobalPing API
+- [x] ASN lookup — dedicated AS info panel via RIPEstat
+- [x] IP comparison — two IPs side by side with diff highlighting
+- [x] Bulk IP lookup — up to 20 IPs, CSV export
+- [x] Lookup history — activity chart, IP address history, recent lookups log
 
 ## Contributing
 
@@ -441,6 +500,8 @@ For the full license text, see the [LICENSE](LICENSE) file.
 - [ipinfo.io](https://ipinfo.io) — Fallback provider #2
 - [dns.google](https://dns.google) — DNS-over-HTTPS (PTR records, DNSBL)
 - [OpenStreetMap](https://openstreetmap.org) — Map tiles
+- [GlobalPing](https://www.globalping.io/) — Traceroute measurements
+- [RIPEstat](https://stat.ripe.net/) — ASN / Autonomous System data
 
 ### Libraries
 - [Leaflet.js](https://leafletjs.com) — Interactive maps
