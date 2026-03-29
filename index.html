@@ -2601,7 +2601,7 @@
         (function () {
             const urlIP = new URLSearchParams(location.search).get('ip');
             if (urlIP && isValidIP(urlIP.trim())) {
-                getIPInfo(urlIP.trim()).then(() => toggleSection('whois'));
+                getIPInfo(urlIP.trim());
             } else {
                 getIPInfo();
             }
