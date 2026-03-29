@@ -10,7 +10,7 @@
     "accent-dim":  "#cc00cc",
     "page-bg":     "#000800",
     "surface":     "#001500",
-    "inner-bg":    "#000800",
+    "inner-bg":    "#000000",
     "danger":      "#ff5555",
     "text":        "#88ff88",
     "muted":       "#336633",
