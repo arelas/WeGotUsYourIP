@@ -1,0 +1,23 @@
+{
+  "name": "Fusion",
+  "id": "fusion",
+  "description": "Fusion — deep teal, ice blue, and orange drawn from the FMIT brand palette",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#d56134",
+    "accent-rgb":  "213, 97, 52",
+    "accent-dim":  "#b54e25",
+    "page-bg":     "#0d1a1e",
+    "surface":     "#1a2e33",
+    "inner-bg":    "#0a1518",
+    "danger":      "#e05252",
+    "text":        "#bfe5e9",
+    "muted":       "#4d7e87",
+    "border":      "#233d44",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}
