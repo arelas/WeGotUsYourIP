@@ -1518,6 +1518,66 @@
         .bulk-clean { color: var(--accent) !important; opacity: 0.7; }
         .bulk-error { opacity: 0.4; }
 
+        /* ── REPUTATION SCORE ────────────────────────────────────── */
+        .rep-widget {
+            text-align: center;
+            padding: 8px 0 4px;
+        }
+        .rep-score-num {
+            font-size: 3em;
+            font-weight: bold;
+            line-height: 1;
+        }
+        .rep-score-outof {
+            font-size: 0.85em;
+            opacity: 0.45;
+        }
+        .rep-bar-wrap {
+            margin: 10px auto 6px;
+            width: 75%;
+            height: 8px;
+            background: rgba(var(--accent-rgb), 0.15);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .rep-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.5s;
+        }
+        .rep-verdict { font-size: 0.8em; opacity: 0.65; margin-top: 4px; }
+
+        /* ── PORT SCANNER ────────────────────────────────────────── */
+        #portscan-section::before { content: '[ PORT SCANNER ]'; }
+
+        .port-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9em;
+        }
+        .port-table th {
+            color: var(--accent);
+            padding: 6px 12px;
+            border-bottom: 2px solid var(--border);
+            font-size: 0.75em;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            text-align: left;
+            font-weight: normal;
+        }
+        .port-table td {
+            padding: 7px 12px;
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.1);
+            color: var(--text, var(--accent));
+        }
+        .port-num     { color: var(--accent) !important; font-weight: bold; width: 60px; }
+        .port-service { opacity: 0.7; width: 100px; }
+        .port-open    { color: var(--accent) !important; font-weight: bold; }
+        .port-closed  { opacity: 0.4; }
+        .port-filtered { opacity: 0.55; }
+        .port-checking { opacity: 0.4; animation: pulse 1.2s ease-in-out infinite; }
+        .port-error   { opacity: 0.35; }
+
         /* ── BULK MAP ────────────────────────────────────────────── */
         #bulk-map {
             height: 260px;
@@ -1629,6 +1689,9 @@
             <button class="whois-toggle" id="blacklist-toggle">
                 > CHECK BLACKLIST
             </button>
+            <button class="whois-toggle" id="portscan-toggle">
+                > PORT SCAN
+            </button>
             <button class="whois-toggle" id="fingerprint-toggle">
                 > BROWSER INFO
             </button>
@@ -1695,6 +1758,14 @@
             <div id="blacklist-content">
                 <div class="loading">> CHECKING BLACKLISTS...</div>
             </div>
+        </div>
+
+        <div class="whois-section hidden-section" id="portscan-section" style="display: none !important;">
+            <div class="cidr-input-row">
+                <input type="text" id="portscan-input" class="ip-input" placeholder="> Enter IP address to scan..." />
+                <button class="whois-toggle" id="portscan-run-btn">> SCAN PORTS</button>
+            </div>
+            <div id="portscan-content"></div>
         </div>
 
         <div class="whois-section hidden-section" id="cidr-section" style="display: none !important;">
@@ -2173,10 +2244,28 @@
                 const checkedCount = Object.values(results).filter(v => v !== 'checking').length;
                 const checkedLists = lists.filter(l => l.zone !== null);
                 const done = checkedCount >= checkedLists.length;
-                const scoreClass = listed > 0 ? 'some-listed' : 'all-clean';
-                const summary = done
-                    ? `<div class="blacklist-score ${scoreClass}">${listed === 0 ? '✓ CLEAN' : `✗ ${listed} LISTED`}</div>`
-                    : `<div class="whois-line" style="text-align:center;opacity:0.6;margin:8px 0;animation:pulse 1.5s ease-in-out infinite;">> running checks...</div>`;
+
+                let summary;
+                if (!done) {
+                    summary = `<div class="whois-line" style="text-align:center;opacity:0.6;margin:8px 0;animation:pulse 1.5s ease-in-out infinite;">> running checks...</div>`;
+                } else {
+                    const vpn = isIPv4 && currentData?.org && detectVPN(currentData.org);
+                    const score = Math.max(0, 100 - (listed * 20) - (vpn ? 5 : 0));
+                    const barColor = score >= 90 ? 'var(--accent)' : score >= 70 ? '#88dd00' : score >= 50 ? '#ddcc00' : score >= 30 ? '#dd7700' : 'var(--danger)';
+                    const verdict = score === 100 ? 'EXCELLENT — no blacklist listings detected'
+                        : score >= 80 ? 'GOOD — minor concerns'
+                        : score >= 60 ? 'FAIR — some negative signals'
+                        : score >= 40 ? 'POOR — multiple negative signals'
+                        : 'CRITICAL — significant reputation issues';
+                    const vpnNote = vpn ? ' · VPN/proxy network detected' : '';
+                    summary = `
+                        <div class="rep-widget">
+                            <div class="rep-score-num" style="color:${barColor}">${score}</div>
+                            <div class="rep-score-outof">/ 100 REPUTATION SCORE</div>
+                            <div class="rep-bar-wrap"><div class="rep-bar-fill" style="width:${score}%;background:${barColor}"></div></div>
+                            <div class="rep-verdict">${verdict}${vpnNote}</div>
+                        </div>`;
+                }
 
                 content.innerHTML = `
                     <div class="whois-line">> DNSBL BLACKLIST CHECK FOR: ${ip}</div>
@@ -2866,6 +2955,119 @@
             URL.revokeObjectURL(url);
         }
 
+        // ── Port Scanner ─────────────────────────────────────────────
+        const PORT_LIST = [
+            { port: 21,   service: 'FTP',        protocol: 'HTTP'  },
+            { port: 22,   service: 'SSH',        protocol: 'HTTP'  },
+            { port: 25,   service: 'SMTP',       protocol: 'HTTP'  },
+            { port: 80,   service: 'HTTP',       protocol: 'HTTP'  },
+            { port: 443,  service: 'HTTPS',      protocol: 'HTTPS' },
+            { port: 3306, service: 'MySQL',      protocol: 'HTTP'  },
+            { port: 3389, service: 'RDP',        protocol: 'HTTP'  },
+            { port: 8080, service: 'HTTP-Alt',   protocol: 'HTTP'  },
+            { port: 8443, service: 'HTTPS-Alt',  protocol: 'HTTPS' },
+        ];
+
+        function parsePortResult(probeResult) {
+            if (!probeResult) return { label: 'TIMEOUT', cls: 'port-filtered' };
+            if (probeResult.statusCode) return { label: `OPEN  (${probeResult.statusCode})`, cls: 'port-open' };
+            const tcp = probeResult.timings?.tcp;
+            const err = (typeof probeResult.error === 'string'
+                ? probeResult.error
+                : probeResult.error?.message || probeResult.error?.type || '').toLowerCase();
+            if (tcp != null && tcp >= 0 && !err.includes('refused') && !err.includes('econnrefused')) {
+                return { label: 'OPEN', cls: 'port-open' };
+            }
+            if (err.includes('refused') || err.includes('econnrefused') || err.includes('connection refused')) {
+                return { label: 'CLOSED', cls: 'port-closed' };
+            }
+            if (err.includes('timeout') || err.includes('etimedout') || err.includes('timed out')) {
+                return { label: 'FILTERED', cls: 'port-filtered' };
+            }
+            return { label: 'CLOSED', cls: 'port-closed' };
+        }
+
+        function renderPortTable(measurements, results, el) {
+            const rows = measurements.map(m => {
+                let status;
+                if (!m.id) {
+                    status = { label: 'ERROR', cls: 'port-error' };
+                } else if (results[m.id] === null) {
+                    status = { label: 'CHECKING...', cls: 'port-checking' };
+                } else {
+                    const probeResult = results[m.id]?.results?.[0]?.result;
+                    status = parsePortResult(probeResult);
+                }
+                return `<tr>
+                    <td class="port-num">${m.port}</td>
+                    <td class="port-service">${m.service}</td>
+                    <td class="${status.cls}">${status.label}</td>
+                </tr>`;
+            }).join('');
+            const scanIP = measurements[0]?.target || '';
+            el.innerHTML = `
+                <div class="whois-line" style="margin-bottom:12px;">> PORT SCAN: ${scanIP}</div>
+                <table class="port-table">
+                    <thead><tr><th>PORT</th><th>SERVICE</th><th>STATUS</th></tr></thead>
+                    <tbody>${rows}</tbody>
+                </table>
+                <div style="margin-top:10px;font-size:0.75em;opacity:0.5;">> Scan performed from GlobalPing probe — reflects external reachability, not local firewall</div>
+            `;
+        }
+
+        async function runPortScan(targetIP) {
+            if (!targetIP || !isValidIP(targetIP)) {
+                document.getElementById('portscan-content').innerHTML = '<div class="error">> ERROR: Enter a valid IP address</div>';
+                return;
+            }
+            const el = document.getElementById('portscan-content');
+            el.innerHTML = '<div class="loading">> FIRING PORT PROBES VIA GLOBALPING...</div>';
+
+            // Fire all measurements in parallel
+            const measurements = await Promise.all(PORT_LIST.map(async p => {
+                try {
+                    const resp = await fetch('https://api.globalping.io/v1/measurements', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            type: 'http',
+                            target: targetIP,
+                            locations: [{ magic: 'world', limit: 1 }],
+                            measurementOptions: {
+                                protocol: p.protocol,
+                                port: p.port,
+                                request: { method: 'HEAD', path: '/' },
+                            },
+                        }),
+                    });
+                    if (!resp.ok) return { ...p, target: targetIP, id: null };
+                    const { id } = await resp.json();
+                    return { ...p, target: targetIP, id };
+                } catch (_) {
+                    return { ...p, target: targetIP, id: null };
+                }
+            }));
+
+            const results = {};
+            measurements.forEach(m => { if (m.id) results[m.id] = null; });
+            renderPortTable(measurements, results, el);
+
+            // Poll until all done
+            for (let i = 0; i < 30; i++) {
+                const pending = Object.keys(results).filter(id => results[id] === null);
+                if (!pending.length) break;
+                await new Promise(r => setTimeout(r, 1000));
+                await Promise.all(pending.map(async id => {
+                    try {
+                        const poll = await fetch(`https://api.globalping.io/v1/measurements/${id}`);
+                        const data = await poll.json();
+                        if (data.status === 'finished') results[id] = data;
+                    } catch (_) {}
+                }));
+                renderPortTable(measurements, results, el);
+            }
+        }
+
         // ── Bulk map ─────────────────────────────────────────────────
         let bulkMap = null;
 
@@ -3235,6 +3437,10 @@
             rdns:        { el: 'rdns-section',         btn: 'rdns-toggle',        closed: '> REVERSE DNS',     open: '> HIDE RDNS DATA',    fn: () => getRdnsData(currentIP) },
             map:         { el: 'map-section',          btn: 'map-toggle',         closed: '> VIEW MAP',        open: '> HIDE MAP',          fn: () => initMap() },
             blacklist:   { el: 'blacklist-section',    btn: 'blacklist-toggle',   closed: '> CHECK BLACKLIST', open: '> HIDE BLACKLIST',    fn: () => checkBlacklist(currentIP) },
+            portscan:    { el: 'portscan-section',     btn: 'portscan-toggle',    closed: '> PORT SCAN',       open: '> HIDE PORT SCAN',    fn: () => {
+                document.getElementById('portscan-input').value = currentIP || '';
+                document.getElementById('portscan-content').innerHTML = '';
+            }},
             fingerprint: { el: 'fingerprint-section',  btn: 'fingerprint-toggle', closed: '> BROWSER INFO',    open: '> HIDE BROWSER INFO', fn: () => displayBrowserFingerprint() },
             cidr:        { el: 'cidr-section',          btn: 'cidr-toggle',        closed: '> CIDR CALC',       open: '> HIDE CIDR CALC',    fn: () => {
                 document.getElementById('cidr-input').value = currentIP ? `${currentIP}/24` : '';
@@ -3303,6 +3509,14 @@
         document.getElementById('cidr-calc-btn').addEventListener('click', displayCIDR);
         document.getElementById('cidr-input').addEventListener('keypress', e => {
             if (e.key === 'Enter') displayCIDR();
+        });
+
+        // Port scan
+        document.getElementById('portscan-run-btn').addEventListener('click', () =>
+            runPortScan(document.getElementById('portscan-input').value.trim())
+        );
+        document.getElementById('portscan-input').addEventListener('keypress', e => {
+            if (e.key === 'Enter') runPortScan(document.getElementById('portscan-input').value.trim());
         });
 
         // ASN lookup
