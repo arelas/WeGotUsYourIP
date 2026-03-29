@@ -15,12 +15,12 @@
 | **Catppuccin Latte** | **Catppuccin Mocha** | **Commodore 64** |
 | <img src="screenshots/crt-amber.png" width="400" alt="crt-amber"> | <img src="screenshots/crt-cga.png" width="400" alt="crt-cga"> | <img src="screenshots/crt-cyan.png" width="400" alt="crt-cyan"> |
 | **CRT-Amber** | **CRT-CGA** | **CRT-Cyan** |
-| <img src="screenshots/crt-magenta.png" width="400" alt="crt-magenta"> | <img src="screenshots/crt-green.png" width="400" alt="crt-green"> | <img src="screenshots/crt-vortex.png" width="400" alt="crt-vortex"> |
-| **CRT-Magenta** | **CRT-Green** | **CRT-Vortex** |
-| <img src="screenshots/crt-white.png" width="400" alt="crt-white"> | <img src="screenshots/dracula.png" width="400" alt="dracula"> | <img src="screenshots/fusion.png" width="400" alt="fusion"> |
-| **CRT-White** | **Dracula** | **Fusion** |
-| <img src="screenshots/dracula-dark.png" width="400" alt="dracula-dark"> | <img src="screenshots/github-dark.png" width="400" alt="github-dark"> | <img src="screenshots/github-light.png" width="400" alt="github-light"> |
-| **Dracula Dark** | **GitHub Dark** | **GitHub Light** |
+| <img src="screenshots/crt-green.png" width="400" alt="crt-green"> | <img src="screenshots/crt-magenta.png" width="400" alt="crt-magenta"> | <img src="screenshots/crt-vortex.png" width="400" alt="crt-vortex"> |
+| **CRT-Green** | **CRT-Magenta** | **CRT-Vortex** |
+| <img src="screenshots/crt-white.png" width="400" alt="crt-white"> | <img src="screenshots/dracula.png" width="400" alt="dracula"> | <img src="screenshots/dracula-dark.png" width="400" alt="dracula-dark"> |
+| **CRT-White** | **Dracula** | **Dracula Dark** |
+| <img src="screenshots/fusion.png" width="400" alt="fusion"> | <img src="screenshots/github-dark.png" width="400" alt="github-dark"> | <img src="screenshots/github-light.png" width="400" alt="github-light"> |
+| **Fusion** | **GitHub Dark** | **GitHub Light** |
 | <img src="screenshots/gruvbox-dark.png" width="400" alt="gruvbox-dark"> | <img src="screenshots/monokai.png" width="400" alt="monokai"> | <img src="screenshots/nord.png" width="400" alt="nord"> |
 | **Gruvbox Dark** | **Monokai** | **Nord** |
 | <img src="screenshots/one-dark.png" width="400" alt="one-dark"> | <img src="screenshots/solarized-dark.png" width="400" alt="solarized-dark"> | <img src="screenshots/solarized-light.png" width="400" alt="solarized-light"> |
