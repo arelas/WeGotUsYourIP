@@ -1,0 +1,23 @@
+{
+  "name": "Ayu Mirage",
+  "id": "ayu-mirage",
+  "description": "Warm dark with vivid yellow-orange accents — the Ayu Mirage editor palette",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#ffcc66",
+    "accent-rgb":  "255, 204, 102",
+    "accent-dim":  "#d9a83a",
+    "page-bg":     "#242936",
+    "surface":     "#2d3347",
+    "inner-bg":    "#1f2430",
+    "danger":      "#ff6666",
+    "text":        "#cccac2",
+    "muted":       "#6e7c8f",
+    "border":      "#343d4f",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "name": "Rosé Pine",
+  "id": "rose-pine",
+  "description": "Muted warm rose and pine — soothingly dark and elegant",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#c4a7e7",
+    "accent-rgb":  "196, 167, 231",
+    "accent-dim":  "#a88cbf",
+    "page-bg":     "#191724",
+    "surface":     "#1f1d2e",
+    "inner-bg":    "#26233a",
+    "danger":      "#eb6f92",
+    "text":        "#e0def4",
+    "muted":       "#6e6a86",
+    "border":      "#403d52",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

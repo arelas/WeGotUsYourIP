@@ -1,0 +1,23 @@
+{
+  "name": "Synthwave '84",
+  "id": "synthwave",
+  "description": "Hot pink neons on deep purple — retro synthwave aesthetic by Robb Owen",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#ff7edb",
+    "accent-rgb":  "255, 126, 219",
+    "accent-dim":  "#cc5ab0",
+    "page-bg":     "#262335",
+    "surface":     "#2d2b55",
+    "inner-bg":    "#1e1c31",
+    "danger":      "#fe4450",
+    "text":        "#f0eff1",
+    "muted":       "#6d6a91",
+    "border":      "#3d3a6b",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

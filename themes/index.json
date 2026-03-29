@@ -1,5 +1,6 @@
 {
   "themes": [
+    { "id": "ayu-mirage",       "file": "ayu-mirage.json"       },
     { "id": "catppuccin-latte", "file": "catppuccin-latte.json" },
     { "id": "catppuccin-mocha", "file": "catppuccin-mocha.json" },
     { "id": "commodore64",      "file": "commodore64.json"      },
@@ -19,8 +20,10 @@
     { "id": "monokai",          "file": "monokai.json"          },
     { "id": "nord",             "file": "nord.json"             },
     { "id": "one-dark",         "file": "one-dark.json"         },
+    { "id": "rose-pine",        "file": "rose-pine.json"        },
     { "id": "solarized-dark",   "file": "solarized-dark.json"   },
     { "id": "solarized-light",  "file": "solarized-light.json"  },
+    { "id": "synthwave",        "file": "synthwave.json"        },
     { "id": "tokyo-night",      "file": "tokyo-night.json"      },
     { "id": "vortex",           "file": "vortex.json"           },
     { "id": "wgus-dark",        "file": "wgus-dark.json"        },
