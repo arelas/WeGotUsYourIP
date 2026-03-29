@@ -430,6 +430,12 @@
             50% { transform: scale(1.4); opacity: 0.6; }
         }
 
+        .wgus-custom-logo {
+            height: 38px;
+            width: auto;
+            display: block;
+        }
+
 
         /* ── HAMBURGER THEME MENU ────────────────────────────────── */
         #theme-menu {
@@ -2133,6 +2139,16 @@
             Object.entries(theme.variables).forEach(([key, val]) => {
                 document.body.style.setProperty(`--${key}`, val);
             });
+
+            // Swap header logo if theme provides one, otherwise restore default
+            const logoLink = document.querySelector('.wgus-logo');
+            if (theme.logo) {
+                logoLink.innerHTML = `<img src="${theme.logo}" alt="${theme.name}" class="wgus-custom-logo">`;
+                if (theme.logo_href) logoLink.href = theme.logo_href;
+            } else {
+                logoLink.href = 'https://wegotussome.com';
+                logoLink.innerHTML = `<div class="wgus-logo-dot"></div>wegotussome <span class="wgus-breadcrumb">&nbsp;/ ip</span>`;
+            }
 
             // Mark active option in dropdown
             document.querySelectorAll('.theme-option').forEach(opt => {

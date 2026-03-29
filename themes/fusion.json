@@ -4,6 +4,7 @@
   "description": "Fusion — deep teal, ice blue, and orange drawn from the FMIT brand palette",
   "author": "We Got Us Some Industries",
   "base": "wgus",
+  "logo": "./themes/fusion-logo.svg",
   "variables": {
     "accent":      "#d56134",
     "accent-rgb":  "213, 97, 52",
