@@ -1,0 +1,23 @@
+{
+  "name": "Kanagawa",
+  "id": "kanagawa",
+  "description": "Deep ink blues and warm gold — inspired by Hokusai's Great Wave",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#7e9cd8",
+    "accent-rgb":  "126, 156, 216",
+    "accent-dim":  "#5a7ab8",
+    "page-bg":     "#1f1f28",
+    "surface":     "#2a2a37",
+    "inner-bg":    "#16161d",
+    "danger":      "#e82424",
+    "text":        "#dcd7ba",
+    "muted":       "#727169",
+    "border":      "#2d4f67",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}

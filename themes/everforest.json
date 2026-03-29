@@ -1,0 +1,23 @@
+{
+  "name": "Everforest",
+  "id": "everforest",
+  "description": "Muted warm greens and earth tones — easy on the eyes forest palette",
+  "author": "We Got Us Some Industries",
+  "base": "wgus",
+  "variables": {
+    "accent":      "#a7c080",
+    "accent-rgb":  "167, 192, 128",
+    "accent-dim":  "#839d5f",
+    "page-bg":     "#272e33",
+    "surface":     "#2e383c",
+    "inner-bg":    "#232a2e",
+    "danger":      "#e67e80",
+    "text":        "#d3c6aa",
+    "muted":       "#859289",
+    "border":      "#414b50",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
+  }
+}
