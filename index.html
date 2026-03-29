@@ -2913,29 +2913,30 @@
                         type: 'ping',
                         target: targetIP,
                         locations: [
-                            { magic: 'NA' },
-                            { magic: 'EU' },
-                            { magic: 'AS' },
-                            { magic: 'OC' },
-                            { magic: 'SA' },
+                            { magic: 'NA', limit: 1 },
+                            { magic: 'EU', limit: 1 },
+                            { magic: 'AS', limit: 1 },
+                            { magic: 'world', limit: 1 },
                         ],
-                        limit: 5,
                         measurementOptions: { packets: 4 },
                     }),
                 });
-                if (!resp.ok) throw new Error(`GlobalPing API error (${resp.status})`);
+                if (!resp.ok) {
+                    const errBody = await resp.json().catch(() => ({}));
+                    throw new Error(errBody.error?.message || `GlobalPing API error (${resp.status})`);
+                }
                 const { id } = await resp.json();
 
                 el.innerHTML = '<div class="loading">> WAITING FOR PROBE RESULTS...</div>';
 
                 let result = null;
-                for (let i = 0; i < 20; i++) {
+                for (let i = 0; i < 30; i++) {
                     await new Promise(r => setTimeout(r, 1000));
                     const poll = await fetch(`https://api.globalping.io/v1/measurements/${id}`);
                     const data = await poll.json();
                     if (data.status === 'finished') { result = data; break; }
                 }
-                if (!result) throw new Error('Ping timed out after 20s');
+                if (!result) throw new Error('Ping timed out after 30s');
 
                 const maxAvg = Math.max(...result.results.map(r => r.result.stats?.avg || 0), 1);
 
