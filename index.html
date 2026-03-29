@@ -1272,6 +1272,90 @@
             word-break: break-all;
         }
 
+        /* ── HISTORY & CHARTS ───────────────────────────────────── */
+        #history-section::before { content: '[ LOOKUP HISTORY ]'; }
+
+        .history-chart-wrap {
+            margin-bottom: 20px;
+        }
+        .history-chart-label {
+            font-size: 0.75em;
+            opacity: 0.6;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+        }
+        .history-chart-wrap svg text { font-family: var(--font-body); }
+
+        .history-ip-list {
+            margin-bottom: 20px;
+        }
+        .history-ip-row {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            padding: 6px 0;
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.1);
+            font-size: 0.85em;
+            flex-wrap: wrap;
+        }
+        .history-ip-addr { color: var(--accent); font-weight: bold; min-width: 110px; }
+        .history-ip-meta { opacity: 0.65; flex: 1; }
+        .history-ip-dates { opacity: 0.4; font-size: 0.85em; white-space: nowrap; }
+        .history-own-badge {
+            font-size: 0.7em;
+            border: 1px solid var(--accent);
+            padding: 1px 5px;
+            border-radius: 3px;
+            opacity: 0.6;
+        }
+
+        .history-log {
+            max-height: 260px;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+            border-radius: 5px;
+        }
+        .history-log-row {
+            display: grid;
+            grid-template-columns: 140px 110px 1fr auto;
+            gap: 8px;
+            padding: 6px 10px;
+            border-bottom: 1px solid rgba(var(--accent-rgb), 0.08);
+            font-size: 0.8em;
+            align-items: center;
+        }
+        .history-log-row:last-child { border-bottom: none; }
+        .history-log-ts   { opacity: 0.45; }
+        .history-log-ip   { color: var(--accent); font-weight: bold; }
+        .history-log-loc  { opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .history-log-own  { opacity: 0.4; font-size: 0.85em; text-align: right; }
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            font-size: 0.8em;
+            opacity: 0.6;
+        }
+        .history-clear-btn {
+            background: none;
+            border: 1px solid var(--border);
+            color: var(--accent);
+            font-family: var(--font-body);
+            font-size: 0.85em;
+            padding: 3px 10px;
+            border-radius: 3px;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: opacity 0.2s;
+        }
+        .history-clear-btn:hover { opacity: 1; }
+
+        @media (max-width: 600px) {
+            .history-log-row { grid-template-columns: 1fr 1fr; }
+            .history-log-ts, .history-log-own { display: none; }
+        }
+
         /* ── TRACEROUTE ──────────────────────────────────────────── */
         #traceroute-section::before { content: '[ TRACEROUTE ]'; }
 
@@ -1498,6 +1582,9 @@
             <button class="whois-toggle" id="bulk-toggle">
                 > BULK LOOKUP
             </button>
+            <button class="whois-toggle" id="history-toggle">
+                > HISTORY
+            </button>
             <button class="whois-toggle" id="share-btn">
                 > SHARE / PERMALINK
             </button>
@@ -1582,6 +1669,10 @@
                 <button class="whois-toggle" id="bulk-export-btn" style="display:none;">> EXPORT CSV</button>
             </div>
             <div id="bulk-content"></div>
+        </div>
+
+        <div class="whois-section hidden-section" id="history-section" style="display: none !important;">
+            <div id="history-content"></div>
         </div>
 
         <div class="funny-message" id="funny-message" style="display: none;"></div>
@@ -2315,6 +2406,9 @@
                     ${overrideIP ? `<div style="margin-top:10px;font-size:0.75em;opacity:0.6;border-top:1px solid var(--border);padding-top:10px;">> SHARED LOOKUP — <a href="${location.origin}${location.pathname}?ip=${ipAddress}" style="color:inherit;opacity:0.8;">${location.origin}${location.pathname}?ip=${ipAddress}</a></div>` : ''}
                 `;
 
+                // Record lookup in history
+                recordLookup(data, !overrideIP);
+
                 // Show action buttons and custom IP input
                 document.getElementById('action-buttons').style.display = 'flex';
                 document.getElementById('custom-ip-container').style.display = 'flex';
@@ -2800,6 +2894,139 @@
             }
         })();
 
+        // ── Lookup history ────────────────────────────────────────────
+        const HISTORY_KEY = 'wgusip-history';
+        const HISTORY_MAX = 200;
+
+        function recordLookup(data, isOwnIP) {
+            try {
+                const entry = {
+                    ts:    Date.now(),
+                    ip:    data.ip || 'Unknown',
+                    city:  data.city || '',
+                    country: data.country_name || data.country || '',
+                    org:   data.org || '',
+                    own:   isOwnIP,
+                };
+                const hist = getHistory();
+                hist.unshift(entry);
+                if (hist.length > HISTORY_MAX) hist.length = HISTORY_MAX;
+                localStorage.setItem(HISTORY_KEY, JSON.stringify(hist));
+            } catch (_) {}
+        }
+
+        function getHistory() {
+            try { return JSON.parse(localStorage.getItem(HISTORY_KEY)) || []; }
+            catch (_) { return []; }
+        }
+
+        function displayHistory() {
+            const hist = getHistory();
+            const el = document.getElementById('history-content');
+
+            if (!hist.length) {
+                el.innerHTML = '<div style="opacity:0.5;font-size:0.9em;">> No history yet — look up some IPs first.</div>';
+                return;
+            }
+
+            // ── Activity bar chart (last 14 days) ──────────────────
+            const days = 14;
+            const counts = new Array(days).fill(0);
+            const now = Date.now();
+            const DAY = 86400000;
+            hist.forEach(e => {
+                const age = Math.floor((now - e.ts) / DAY);
+                if (age < days) counts[days - 1 - age]++;
+            });
+            const maxCount = Math.max(...counts, 1);
+            const barW = 16, barGap = 4, chartH = 60, labelH = 16;
+            const chartW = days * (barW + barGap) - barGap;
+
+            let bars = '';
+            counts.forEach((c, i) => {
+                const barH = Math.max(2, Math.round((c / maxCount) * chartH));
+                const x = i * (barW + barGap);
+                const y = chartH - barH;
+                const opacity = c > 0 ? 0.85 : 0.18;
+                bars += `<rect x="${x}" y="${y}" width="${barW}" height="${barH}" fill="var(--accent)" opacity="${opacity}" rx="2"/>`;
+                if (i === 0 || i === days - 1 || i === Math.floor(days / 2)) {
+                    const d = new Date(now - (days - 1 - i) * DAY);
+                    const label = `${d.getMonth()+1}/${d.getDate()}`;
+                    bars += `<text x="${x + barW/2}" y="${chartH + labelH}" text-anchor="middle" fill="var(--accent)" font-size="9" opacity="0.45">${label}</text>`;
+                }
+            });
+
+            const chartSVG = `<svg width="${chartW}" height="${chartH + labelH + 2}" xmlns="http://www.w3.org/2000/svg">${bars}</svg>`;
+
+            // ── Your IP history (own lookups grouped by IP) ─────────
+            const ownLookups = hist.filter(e => e.own);
+            const ipMap = {};
+            ownLookups.forEach(e => {
+                if (!ipMap[e.ip]) ipMap[e.ip] = { ip: e.ip, meta: `${e.city ? e.city + ', ' : ''}${e.country}`.replace(/(^, |, $)/, ''), org: e.org, first: e.ts, last: e.ts, count: 0 };
+                ipMap[e.ip].count++;
+                if (e.ts < ipMap[e.ip].first) ipMap[e.ip].first = e.ts;
+                if (e.ts > ipMap[e.ip].last)  ipMap[e.ip].last  = e.ts;
+            });
+            const ownIPs = Object.values(ipMap).sort((a, b) => b.last - a.last);
+
+            let ipRows = '';
+            ownIPs.slice(0, 10).forEach(entry => {
+                const firstStr = new Date(entry.first).toLocaleDateString();
+                const lastStr  = new Date(entry.last).toLocaleDateString();
+                const dateRange = firstStr === lastStr ? lastStr : `${firstStr} – ${lastStr}`;
+                ipRows += `
+                    <div class="history-ip-row">
+                        <span class="history-ip-addr">${entry.ip}</span>
+                        <span class="history-own-badge">YOUR IP</span>
+                        <span class="history-ip-meta">${entry.meta}${entry.org ? ' · ' + entry.org : ''}</span>
+                        <span class="history-ip-dates">${dateRange} · ${entry.count}×</span>
+                    </div>`;
+            });
+
+            // ── Recent lookups log ──────────────────────────────────
+            let logRows = '';
+            hist.slice(0, 50).forEach(e => {
+                const ts = new Date(e.ts);
+                const tsStr = ts.toLocaleDateString() + ' ' + ts.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+                const loc = [e.city, e.country].filter(Boolean).join(', ');
+                logRows += `
+                    <div class="history-log-row">
+                        <span class="history-log-ts">${tsStr}</span>
+                        <span class="history-log-ip">${e.ip}</span>
+                        <span class="history-log-loc">${loc || '—'}</span>
+                        <span class="history-log-own">${e.own ? 'own' : ''}</span>
+                    </div>`;
+            });
+
+            el.innerHTML = `
+                <div class="history-controls">
+                    <span>> ${hist.length} lookup${hist.length !== 1 ? 's' : ''} recorded</span>
+                    <button class="history-clear-btn" onclick="clearHistory()">> CLEAR HISTORY</button>
+                </div>
+
+                <div class="history-chart-wrap">
+                    <div class="history-chart-label">> ACTIVITY — LAST 14 DAYS</div>
+                    ${chartSVG}
+                </div>
+
+                ${ownIPs.length ? `
+                <div class="history-ip-list">
+                    <div class="history-chart-label">> YOUR IP ADDRESSES</div>
+                    ${ipRows}
+                </div>` : ''}
+
+                <div>
+                    <div class="history-chart-label">> RECENT LOOKUPS</div>
+                    <div class="history-log">${logRows}</div>
+                </div>
+            `;
+        }
+
+        function clearHistory() {
+            localStorage.removeItem(HISTORY_KEY);
+            displayHistory();
+        }
+
         // ── Section toggle system ─────────────────────────────────────
         const SECTIONS = {
             whois:       { el: 'whois-section',       btn: 'whois-toggle',       closed: '> WHOIS MY IP',     open: '> HIDE WHOIS DATA',   fn: () => getWhoisData(currentIP) },
@@ -2828,6 +3055,7 @@
                 document.getElementById('bulk-content').innerHTML = '';
                 document.getElementById('bulk-export-btn').style.display = 'none';
             }},
+            history:     { el: 'history-section',       btn: 'history-toggle',     closed: '> HISTORY',         open: '> HIDE HISTORY',      fn: () => displayHistory() },
         };
 
         function closeAllSections(except) {
