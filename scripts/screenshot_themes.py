@@ -74,13 +74,6 @@ def main():
         except PWTimeout:
             print("Warning: IP detection timed out — screenshotting anyway.")
 
-        # Open WHOIS panel so the frame is filled with content
-        page.evaluate("window.toggleSection && window.toggleSection('whois')")
-        try:
-            page.wait_for_selector(".whois-line", timeout=20_000)
-            page.wait_for_timeout(400)
-        except PWTimeout:
-            print("Warning: WHOIS data did not load in time — screenshotting with loading state.")
 
         print(f"\nTaking {len(themes)} screenshots...\n")
 
@@ -91,16 +84,6 @@ def main():
             # Apply theme via the page's own setTheme function
             page.evaluate(f"window.setTheme && window.setTheme({json.dumps(tid)})")
             page.wait_for_timeout(350)  # allow CSS transitions to finish
-
-            # Ensure WHOIS panel is open (setTheme doesn't close sections,
-            # but keep this idempotent in case state drifts)
-            page.evaluate("""() => {
-                const el = document.getElementById('whois-section');
-                if (el && el.classList.contains('hidden-section')) {
-                    window.toggleSection && window.toggleSection('whois');
-                }
-            }""")
-            page.wait_for_timeout(200)
 
             page.screenshot(path=out_path, full_page=False)
             print(f"  ✓ {tid}.png")
