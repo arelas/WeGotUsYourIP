@@ -2140,6 +2140,11 @@
                 document.body.style.setProperty(`--${key}`, val);
             });
 
+            // Swap page title / h1 if theme provides one, otherwise restore default
+            document.querySelector('h1').textContent = theme.title
+                ? theme.title
+                : '[ WE GOT US YOUR IP ]';
+
             // Swap header logo if theme provides one, otherwise restore default
             const logoLink = document.querySelector('.wgus-logo');
             if (theme.logo) {
