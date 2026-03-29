@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wegotusyourip-v18';
+const CACHE_NAME = 'wegotusyourip-v19';
 
 const APP_SHELL = [
     './',
@@ -15,6 +15,7 @@ const APP_SHELL = [
     './themes/dracula-dark.json',
     './themes/nord.json',
     './themes/gruvbox-dark.json',
+    './themes/crt-vortex.json',
     './themes/tokyo-night.json',
     './themes/vortex.json',
     './themes/solarized-dark.json',

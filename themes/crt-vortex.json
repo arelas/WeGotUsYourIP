@@ -1,0 +1,23 @@
+{
+  "name": "CRT-Vortex",
+  "id": "crt-vortex",
+  "description": "CRT-Vortex — electric green text, magenta borders, inspired by The Vortex BBS ANSI art",
+  "author": "We Got Us Some Industries",
+  "base": "terminal",
+  "variables": {
+    "accent":      "#55ff55",
+    "accent-rgb":  "85, 255, 85",
+    "accent-dim":  "#00aa00",
+    "page-bg":     "#000000",
+    "surface":     "#000500",
+    "inner-bg":    "#000000",
+    "danger":      "#ff5555",
+    "text":        "#55ff55",
+    "muted":       "rgba(85, 255, 85, 0.5)",
+    "border":      "#ff55ff",
+    "font-body":   "'Courier New', monospace",
+    "font-head":   "'Courier New', monospace",
+    "scanlines":   "repeating-linear-gradient(0deg, rgba(85,255,85,0.03) 0px, transparent 1px, transparent 2px, rgba(85,255,85,0.03) 3px)",
+    "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4) 100%)"
+  }
+}

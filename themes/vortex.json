@@ -1,23 +1,23 @@
 {
   "name": "Vortex",
   "id": "vortex",
-  "description": "Vortex BBS — hot magenta and electric green on black, inspired by The Vortex BBS ANSI art",
+  "description": "Vortex — hot magenta on dark purple, inspired by The Vortex BBS",
   "author": "We Got Us Some Industries",
-  "base": "terminal",
+  "base": "wgus",
   "variables": {
-    "accent":      "#55ff55",
-    "accent-rgb":  "85, 255, 85",
-    "accent-dim":  "#00aa00",
-    "page-bg":     "#000000",
-    "surface":     "#000500",
-    "inner-bg":    "#000000",
+    "accent":      "#ff55ff",
+    "accent-rgb":  "255, 85, 255",
+    "accent-dim":  "#aa00aa",
+    "page-bg":     "#080008",
+    "surface":     "#0e000e",
+    "inner-bg":    "#080008",
     "danger":      "#ff5555",
-    "text":        "#55ff55",
-    "muted":       "rgba(85, 255, 85, 0.5)",
-    "border":      "#ff55ff",
-    "font-body":   "'Courier New', monospace",
-    "font-head":   "'Courier New', monospace",
-    "scanlines":   "repeating-linear-gradient(0deg, rgba(85,255,85,0.03) 0px, transparent 1px, transparent 2px, rgba(85,255,85,0.03) 3px)",
-    "vignette":    "radial-gradient(circle, transparent 60%, rgba(0,0,0,0.4) 100%)"
+    "text":        "#f0d0f0",
+    "muted":       "#553355",
+    "border":      "#220022",
+    "font-body":   "'JetBrains Mono', monospace",
+    "font-head":   "'JetBrains Mono', monospace",
+    "scanlines":   "none",
+    "vignette":    "none"
   }
 }

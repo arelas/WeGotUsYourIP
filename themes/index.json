@@ -8,6 +8,7 @@
     { "id": "crt-cyan",          "file": "crt-cyan.json"         },
     { "id": "crt-magenta",      "file": "crt-magenta.json"      },
     { "id": "crt-green",        "file": "terminal.json"         },
+    { "id": "crt-vortex",       "file": "crt-vortex.json"       },
     { "id": "crt-white",        "file": "white.json"            },
     { "id": "dracula",          "file": "dracula.json"          },
     { "id": "fusion",           "file": "fusion.json"           },
